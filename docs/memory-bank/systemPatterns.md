@@ -1,0 +1,134 @@
+# System Patterns
+
+## Architecture
+
+### Feature-First Architecture
+The application is organized by features rather than by technical layers. Each feature has its own directory containing all related components:
+
+```
+lib/
+  ├── features/
+  │   ├── auth/
+  │   │   ├── data/
+  │   │   ├── domain/
+  │   │   └── presentation/
+  │   ├── projects/
+  │   │   ├── data/
+  │   │   ├── domain/
+  │   │   └── presentation/
+  │   └── tasks/
+  │       ├── data/
+  │       ├── domain/
+  │       └── presentation/
+  └── presentation/
+      ├── common_widgets/
+      ├── navigation/
+      └── theme/
+```
+
+### Clean Architecture Principles
+Each feature follows a simplified clean architecture approach:
+
+1. **Data Layer**: Repositories and data sources
+2. **Domain Layer**: Entities and business logic
+3. **Presentation Layer**: UI components and state management
+
+## Design Patterns
+
+### Repository Pattern
+- Repositories abstract data access from the rest of the application
+- Each repository provides methods for CRUD operations
+- Repositories return streams of data for reactive UI updates
+
+### Provider Pattern (via Riverpod)
+- Providers expose data and functionality to the UI
+- UI components consume providers to access data
+- Providers are composed to create complex data flows
+
+### Service Pattern
+- Services encapsulate business logic
+- Services are injected into repositories or providers
+- Services handle cross-cutting concerns
+
+### Factory Pattern
+- Used for creating complex objects
+- Particularly for creating entities from JSON data
+
+## State Management
+
+### Riverpod Providers
+- `StreamProvider`: For reactive data streams from Firestore
+- `StateProvider`: For simple state management
+- `StateNotifierProvider`: For more complex state management
+- `Provider`: For derived state and dependencies
+
+### State Flow
+1. UI subscribes to providers
+2. Providers watch repositories
+3. Repositories stream data from Firestore
+4. User actions trigger repository methods
+5. Repository methods update Firestore
+6. Firestore updates trigger UI updates
+
+## Navigation
+
+### Go Router
+- Declarative routing with GoRouter
+- Route parameters for dynamic routes
+- Nested routes for complex navigation
+- Route guards for authentication
+
+## Web Optimization Patterns
+
+### Resource Loading Strategy
+- **Preloading**: Critical resources are preloaded
+- **Preconnecting**: Early connection to required origins
+- **Deferred Loading**: Non-critical scripts use `defer` attribute
+- **Async Loading**: Scripts that don't block rendering use `async`
+
+### Service Worker Caching Strategies
+- **Cache-First**: Static assets (images, fonts, etc.)
+- **Network-First**: API calls and dynamic content
+- **Stale-While-Revalidate**: HTML navigation and UI updates
+- **Network with Cache Fallback**: Default strategy
+
+### Performance Monitoring
+- **Custom Traces**: Track specific operations
+- **HTTP Metrics**: Monitor network requests
+- **User Timing**: Track user interactions
+- **Resource Timing**: Monitor resource loading
+- **Long Tasks**: Detect potential UI jank
+
+### Offline Experience
+- **Background Sync**: Queue operations when offline
+- **Offline Fallback**: Show offline UI when disconnected
+- **Cached Data Access**: Access previously loaded data when offline
+
+## Error Handling
+
+### Try-Catch Pattern
+- Repository methods use try-catch for error handling
+- Errors are logged and propagated to the UI
+- UI shows appropriate error messages
+
+### Result Pattern
+- Some operations return a Result object
+- Result can be Success or Error
+- UI handles both cases appropriately
+
+## Testing
+
+### Repository Testing
+- Repositories are tested with mock data sources
+- Tests verify CRUD operations
+- Tests verify error handling
+
+### Provider Testing
+- Providers are tested with mock repositories
+- Tests verify state changes
+- Tests verify dependencies
+
+### UI Testing
+- Widget tests verify UI behavior
+- Integration tests verify feature workflows
+- Golden tests verify UI appearance

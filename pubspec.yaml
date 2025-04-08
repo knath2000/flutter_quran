@@ -35,6 +35,21 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  # Core Dependencies
+  flutter_riverpod: ^2.5.1 # State Management
+  riverpod_annotation: ^2.3.5 # Code generation for Riverpod (optional but recommended)
+  go_router: ^14.2.1 # Navigation
+  dio: ^5.5.0+1 # Data Fetching
+  just_audio: ^0.9.39 # Audio Playback
+  hive: ^2.2.3 # Data Persistence (DB)
+  hive_flutter: ^1.1.0 # Flutter helpers for Hive
+  shared_preferences: ^2.2.3 # Data Persistence (Simple Settings)
+  google_fonts: ^6.2.1 # Custom Fonts
+  rive: ^0.13.4 # Rive Animations
+  lottie: ^3.1.2 # Lottie Animations
+  flutter_svg: ^2.0.10+1 # SVG Rendering (if needed)
+  flutter_staggered_animations: ^1.1.1 # For list/grid animations
+  audio_video_progress_bar: ^2.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -45,6 +60,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  mocktail: ^1.0.4 # Mocking for testing
+  hive_generator: ^2.0.1 # Hive code generation
+  build_runner: ^2.4.11 # Code generation runner
+  csv: ^5.1.1 # For CSV parsing script
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -58,7 +77,10 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - assets/rive/ # Declare the Rive assets directory
+    - assets/data/ # Declare the data assets directory
+
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

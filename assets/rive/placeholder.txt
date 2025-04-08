@@ -1,0 +1,1 @@
+This is a placeholder file. Replace with actual .riv animation files (e.g., background_stars.riv, mascot_reaction.riv).
