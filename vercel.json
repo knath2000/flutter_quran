@@ -5,7 +5,7 @@
       "src": "pubspec.yaml",
       "use": "@vercel/static-build",
       "config": {
-        "installCommand": "apt-get update && apt-get install -y curl git unzip && git clone https://github.com/flutter/flutter.git --depth 1 -b stable /flutter && /flutter/bin/flutter config --enable-web && /flutter/bin/flutter doctor",
+        "installCommand": "apt-get update && apt-get install -y curl git unzip && git clone https://github.com/flutter/flutter.git --depth 1 -b 3.27.0 /flutter && /flutter/bin/flutter config --enable-web && /flutter/bin/flutter doctor",
         "buildCommand": "/flutter/bin/flutter build web --release",
         "outputDirectory": "build/web"
       }
