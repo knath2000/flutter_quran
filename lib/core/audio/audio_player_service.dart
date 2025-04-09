@@ -123,7 +123,7 @@ class AudioPlayerService {
         // Pass the ID of the completed verse to the notifier
         _playbackNotifier.setCompleted(completedVerseId);
         _progressNotifier.reset();
-        _currentVerseId = null; // Clear internal ID *after* notifying
+        // _currentVerseId = null; // Clear internal ID *after* notifying - REMOVED, handled in playVerse
         // Autoplay logic is external in AppLifecycleObserver
       } else if (completedVerseId == null &&
           _playbackNotifier.state.status != PlaybackStatus.idle) {
@@ -182,7 +182,7 @@ class AudioPlayerService {
   /// Plays audio from the given URL for a specific verse.
   Future<void> playVerse(String? url, int surahNumber, int verseNumber) async {
     final verseId = PlayingVerseIdentifier(surahNumber, verseNumber);
-    _currentVerseId = verseId; // Update current ID immediately
+    // _currentVerseId = verseId; // Update current ID immediately - MOVED down after stop/reset
     print('AudioService: playVerse called for $verseId');
 
     if (url == null || url.isEmpty) {
@@ -197,8 +197,11 @@ class AudioPlayerService {
     try {
       // Stop is important to cancel potential previous loading/playing
       await _audioPlayer.stop();
+      _resetInternalState(); // Explicitly clear old state/ID before setting new one
       // await Future.delayed(const Duration(milliseconds: 50)); // Removed delay
-      _progressNotifier.reset();
+      _progressNotifier.reset(); // Reset progress for the new verse
+      _currentVerseId =
+          verseId; // Update current ID *after* stopping/resetting old one
       await _audioPlayer.setUrl(url);
       await _audioPlayer.setLoopMode(LoopMode.off); // Ensure single play
 
