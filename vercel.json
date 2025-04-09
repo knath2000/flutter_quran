@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "apt-get update && apt-get install -y curl xz-utils && curl -L -o flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.27.0-stable.tar.xz && mkdir /flutter && tar xf flutter.tar.xz -C / && rm flutter.tar.xz && export PATH=\"$PATH:/flutter/bin\" && flutter config --enable-web && flutter pub get && flutter build web --release",
+  "buildCommand": "./build.sh",
   "builds": [
     {
       "src": "build/web",
