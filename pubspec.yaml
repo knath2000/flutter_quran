@@ -81,7 +81,7 @@ flutter:
   assets:
     - assets/rive/ # Declare the Rive assets directory
     - assets/data/ # Declare the data assets directory
-
+    - assets/images/ # Declare the images directory
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

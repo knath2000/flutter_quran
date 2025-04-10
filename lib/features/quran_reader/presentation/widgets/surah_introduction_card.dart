@@ -26,13 +26,28 @@ class SurahIntroductionCard extends HookWidget {
             ? introductionText
             : '${introductionText.substring(0, 150)}...'; // Truncate if not expanded
 
-    return Card(
+    // Use a Container with BoxDecoration for background image
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-      elevation: 2,
-      color: colorScheme.surfaceVariant.withOpacity(
-        0.5,
-      ), // Semi-transparent dark card
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceVariant.withOpacity(0.85), // Adjust opacity
+        borderRadius: BorderRadius.circular(12),
+        image: const DecorationImage(
+          image: AssetImage('assets/images/dark_honeycomb_pattern.png'),
+          repeat: ImageRepeat.repeat, // Tile the image
+          opacity: 0.05, // Make the pattern very subtle
+        ),
+        boxShadow: const [
+          // Replicate Card elevation with BoxShadow
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 4.0,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      clipBehavior:
+          Clip.antiAlias, // Clip the background image to rounded corners
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
