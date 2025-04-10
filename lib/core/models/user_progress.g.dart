@@ -18,10 +18,8 @@ class UserProgressAdapter extends TypeAdapter<UserProgress> {
     };
     return UserProgress(
       points: fields[0] as int,
-      earnedBadgeIds:
-          (fields[1] as List).cast<String>().toSet(), // Convert List to Set
-      completedVerseKeys:
-          (fields[4] as List).cast<String>().toSet(), // Convert List to Set
+      earnedBadgeIds: (fields[1] as List).cast<String>(),
+      completedVerseKeys: (fields[4] as List).cast<String>(),
       currentStreak: fields[2] as int,
       lastSessionDate: fields[3] as DateTime?,
     );

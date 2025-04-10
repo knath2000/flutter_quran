@@ -20,11 +20,11 @@ abstract class IQuranRepository {
 
 class QuranRepository implements IQuranRepository {
   final QuranApiDataSource _apiDataSource;
-  final Box<List<dynamic>>
-      _verseCacheBox; // Use List<dynamic> if adapter not ready
+  // Use correct type now that VerseAdapter is registered
+  final Box<List<Verse>> _verseCacheBox;
 
   QuranRepository(this._apiDataSource)
-      : _verseCacheBox = Hive.box<List<dynamic>>('quranVerseCache');
+      : _verseCacheBox = Hive.box<List<Verse>>('quranVerseCache');
 
   @override
   Future<List<SurahInfo>> getSurahList() async {
@@ -43,23 +43,11 @@ class QuranRepository implements IQuranRepository {
   @override
   Future<List<Verse>> getSurahDetails(int surahNumber) async {
     // 1. Check cache first
-    final cachedData = _verseCacheBox.get(surahNumber);
-    if (cachedData != null) {
+    // 1. Check cache first (Hive handles deserialization via adapter)
+    final List<Verse>? cachedVerses = _verseCacheBox.get(surahNumber);
+    if (cachedVerses != null) {
       print('Cache hit for Surah $surahNumber verses.');
-      // TODO: If VerseAdapter is registered and working, this box should be Box<List<Verse>>
-      // and casting won't be needed or will be simpler.
-      // For now, assume dynamic list needs parsing if adapter isn't used for storage.
-      try {
-        // This assumes cachedData is List<Map<String, dynamic>> if not stored as List<Verse>
-        // If stored as List<Verse> directly (requires adapter), just cast: return cachedData as List<Verse>;
-        return cachedData
-            .map((dynamic item) => Verse.fromJson(item as Map<String, dynamic>))
-            .toList();
-      } catch (e) {
-        print(
-            'Error parsing cached verse data for Surah $surahNumber: $e. Fetching from API.');
-        // Fall through to fetch from API if cache parsing fails
-      }
+      return cachedVerses;
     }
 
     // 2. If cache miss or error, fetch from API
@@ -67,13 +55,8 @@ class QuranRepository implements IQuranRepository {
     try {
       final verses = await _apiDataSource.getSurahDetails(surahNumber);
 
-      // 3. Save to cache before returning
-      // TODO: If VerseAdapter is working, store `verses` directly.
-      // Otherwise, convert to List<Map<String, dynamic>> if needed for storage.
-      // For simplicity now, assuming we can store List<Verse> if adapter is set up,
-      // otherwise store raw JSON-like structure if needed. Let's store verses directly for now.
-      // Use put instead of add, with surahNumber as the key
-      await _verseCacheBox.put(surahNumber, verses); // Store the List<Verse>
+      // 3. Save fetched verses to cache (Hive handles serialization via adapter)
+      await _verseCacheBox.put(surahNumber, verses);
       print('Saved Surah $surahNumber verses to cache.');
 
       return verses;
