@@ -24,20 +24,18 @@ void main() async {
     // Removed AppInitializerObserver from here
   );
 
-  // Initialize JSON data source if on supported platform BEFORE running the app
-  if (kIsWeb || Platform.isMacOS) {
-    print("Main: Pre-initializing JSON data source...");
-    try {
-      // Read the future from the initializer provider and wait for it
-      await container.read(jsonDataSourceInitializerProvider.future);
-      print("Main: JSON data source pre-initialized successfully.");
-    } catch (e, s) {
-      print("Main: Error during JSON data source pre-initialization: $e");
-      print(s);
-      // Decide how to handle initialization failure (e.g., show error, exit)
-      // For now, we'll let the app continue, but text loading might fail later.
-    }
-  }
+  // Removed explicit pre-initialization of JSON data source.
+  // It will now initialize lazily when first requested by a provider.
+  // if (kIsWeb || Platform.isMacOS) {
+  //   print("Main: Pre-initializing JSON data source...");
+  //   try {
+  //     await container.read(jsonDataSourceInitializerProvider.future);
+  //     print("Main: JSON data source pre-initialized successfully.");
+  //   } catch (e, s) {
+  //     print("Main: Error during JSON data source pre-initialization: $e");
+  //     print(s);
+  //   }
+  // }
 
   runApp(
     // Use UncontrolledProviderScope with the existing container
