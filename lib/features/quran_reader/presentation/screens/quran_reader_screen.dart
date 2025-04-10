@@ -68,7 +68,30 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
     );
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.surahName ?? 'Surah ${widget.surahNumber}'),
+        // Use surahListProvider to get the name for the title
+        title: surahListAsync.when(
+          data: (list) {
+            final info = list.firstWhere(
+              (s) => s.number == widget.surahNumber,
+              orElse:
+                  () => SurahInfo(
+                    number: widget.surahNumber,
+                    name: 'Surah ${widget.surahNumber}',
+                    englishName:
+                        widget.surahName ?? 'Surah ${widget.surahNumber}',
+                    englishNameTranslation: '',
+                    revelationType: '',
+                    numberOfAyahs: 0,
+                  ),
+            );
+            return Text(info.englishName); // Display English Name
+          },
+          loading:
+              () => Text(widget.surahName ?? 'Surah ${widget.surahNumber}'),
+          error:
+              (_, __) =>
+                  Text(widget.surahName ?? 'Surah ${widget.surahNumber}'),
+        ),
         actions: [
           // Conditionally display Autoplay Indicator
           if (isAutoplayOn)

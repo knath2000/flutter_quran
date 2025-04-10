@@ -28,11 +28,13 @@ class SurahIntroductionCard extends HookWidget {
             (introductionText == null || introductionText.isEmpty)
                 ? placeholderIntroduction
                 : introductionText;
-        final bool canExpand = effectiveIntroduction.length > 150;
+        // Determine expansion based on line count (e.g., more than 3 lines)
+        final lines = effectiveIntroduction.split('\n');
+        final bool canExpand = lines.length > 3;
         final String displayedText =
             (isExpanded.value || !canExpand)
                 ? effectiveIntroduction
-                : '${effectiveIntroduction.substring(0, 150)}...';
+                : '${lines.take(3).join('\n')}...'; // Show first 3 lines when collapsed
 
         // Revert back to Card, remove background image properties
         return Card(
@@ -52,7 +54,7 @@ class SurahIntroductionCard extends HookWidget {
                   CrossAxisAlignment.center, // Center column content
               children: [
                 Text(
-                  'Featured Surah: $surahName', // Use passed surahName
+                  '$surahName Description', // Updated title format
                   style: textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSurfaceVariant,
@@ -68,7 +70,8 @@ class SurahIntroductionCard extends HookWidget {
                     Text(
                       displayedText,
                       // Limit max lines when not expanded to help with fade calculation
-                      maxLines: !isExpanded.value && canExpand ? 4 : null,
+                      // Use maxLines: 3 when collapsed and expandable
+                      maxLines: !isExpanded.value && canExpand ? 3 : null,
                       overflow: TextOverflow.clip, // Clip instead of ellipsis
                       style: textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant.withOpacity(0.85),
