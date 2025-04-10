@@ -22,6 +22,9 @@
     - English Translation: `en.sahih`
     - Audio Recitation: `ar.alafasy` (configurable via settings)
     - English Transliteration: `en.transliteration` (configurable via settings)
+- **Google Gemini API**: Used for dynamically generating Surah introductions.
+  - Model: `gemini-2.0-flash`
+  - Authentication: Requires `GEMINI_API_KEY` passed via `--dart-define` during build.
 
 ### Web Technologies
 - **PWA**: Progressive Web App capabilities
@@ -43,6 +46,7 @@
 - Firebase project configuration in `firebase_options.dart`
 - Environment-specific configurations
 - Web-specific configurations in `web/index.html` and `web/manifest.json`
+- API Key for Gemini passed via `--dart-define=GEMINI_API_KEY=$GEMINI_API_KEY` in `build.sh` for Vercel builds.
 
 ## Technical Constraints
 
@@ -88,6 +92,8 @@
 - `firebase_auth`: Authentication
 - `cloud_firestore`: Database
 - `firebase_performance`: Performance monitoring
+### AI / Generative
+- `google_generative_ai`: Google Gemini API SDK
 
 ### UI/UX
 - `flutter_hooks`: UI state management
@@ -113,6 +119,7 @@
 - Riverpod providers for state management
 - Repository pattern for data access
 - Service pattern for business logic
+- `surahDetailsProvider` uses a record `(List<Verse>, String)` to manage combined verse and introduction state.
 
 ### Data Flow
 - Repositories provide streams of data

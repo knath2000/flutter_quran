@@ -1,38 +1,41 @@
 # Active Context
 
-## Current Focus (as of commit 02a2c77)
+## Current Focus (as of commit 8e47d5c)
 
-The focus was on implementing the UI structure for a Surah introduction/summary section at the top of the `QuranReaderScreen`, mirroring a provided example and using placeholder text for now.
+The focus was on successfully integrating the Google Gemini API to dynamically fetch Surah introductions and display them in the `QuranReaderScreen`. This involved resolving API key handling issues, refactoring state management, and updating UI components.
 
-## Recent Changes (leading up to commit 02a2c77)
+## Recent Changes (leading up to commit 8e47d5c)
 
-*   **Surah Introduction UI:**
-    *   Updated `SurahInfo` model (`lib/core/models/surah_info.dart`) to include an optional `introduction` field.
-    *   Created a new `SurahIntroductionCard` widget (`lib/features/quran_reader/presentation/widgets/surah_introduction_card.dart`) using `flutter_hooks` for state management (expansion toggle).
-        *   Displays Surah name, truncated introduction text, and a "View Full Content" / "Show Less" button.
-        *   Uses placeholder text for the introduction content.
-        *   Styled to resemble the provided screenshot example.
-    *   Added `flutter_hooks` dependency to `pubspec.yaml` and ran `flutter pub get`.
-    *   Integrated `SurahIntroductionCard` into `QuranReaderScreen`, placing it above the verse list. It fetches the relevant `SurahInfo` from the `surahListProvider` to display the title.
-*   **(Previous) Transliteration Feature:** Implemented display of verse transliterations below translations, controlled by a user setting. Updated API calls and UI accordingly. (Commit: `c99fc38`)
-*   **(Previous) Web Performance Optimization:** Addressed Lighthouse issues, implemented deferred loading, font preloading, etc. (Commits: `ee0e64e` to `99eb9ae`)
+*   **Gemini API Integration:**
+    *   Added `google_generative_ai` dependency.
+    *   Created `GeminiSurahService` (`lib/core/services/gemini_surah_service.dart`) to handle API calls.
+    *   Updated `build.sh` to pass the `GEMINI_API_KEY` via `--dart-define` for Vercel builds, resolving authentication errors.
+*   **State Management Refactor:**
+    *   Modified `SurahDetailsNotifier` (`lib/features/quran_reader/application/providers/surah_details_provider.dart`) state to hold both `List<Verse>` and the `String` introduction using a record `(List<Verse>, String)`.
+    *   Updated `fetchSurah` method to call the `GeminiSurahService` once per Surah and combine results into the new state structure.
+    *   Removed the incorrect `introduction` field previously added to the `Verse` model.
+*   **UI Updates:**
+    *   Updated `QuranReaderScreen` to consume the new combined state from `surahDetailsProvider`.
+    *   Modified `QuranReaderScreen` to derive the `AsyncValue<String?>` for the introduction from the combined state and pass it correctly to `SurahIntroductionCard`.
+    *   Updated `AppLifecycleObserver` to correctly access verse data from the new state record for autoplay logic.
 
 ## Active Decisions
 
-*   **Surah Introduction Data:** Using placeholder text within the `SurahIntroductionCard` widget for now. Actual data fetching (from API or local file) is deferred.
-*   **UI Placement:** The introduction card is placed at the top of the `QuranReaderScreen`'s body content.
-*   **Expansion:** The card includes basic expand/collapse functionality managed by internal state (`useState`).
+*   **Surah Introduction Source:** Google Gemini API (`gemini-2.0-flash`) is used for dynamic Surah introductions.
+*   **API Key Handling:** API key is passed via `--dart-define` during the build process, sourced from Vercel environment variables for deployment.
+*   **State Structure:** `surahDetailsProvider` now manages a combined state `AsyncValue<(List<Verse>, String)>` to hold both verses and the introduction.
+*   **UI Integration:** `SurahIntroductionCard` displays the introduction fetched via `surahDetailsProvider`.
 
 ## Next Steps
 
-1.  **Test Surah Introduction UI:** Verify the card appears correctly, uses placeholder text, expands/collapses, and styling is acceptable across different screen sizes.
-2.  **Implement Actual Data Fetching:** Plan and implement the logic to fetch real Surah introduction data (e.g., from an API endpoint or the `surahdesc.rtf` file mentioned previously) and replace the placeholder text.
-3.  **Update Memory Bank:** Complete the documentation update for this UI implementation in `progress.md` and `systemPatterns.md`.
-4.  **Address Known Issues:** Revisit persistent issues like LCP measurement, viewport accessibility, etc.
-5.  **Continue Core Feature Development:** Resume work on other planned features.
+1.  **Test Gemini Integration:** Thoroughly test the Surah introduction display across different Surahs and network conditions.
+2.  **Refine Error Handling:** Improve error handling for Gemini API calls within `SurahDetailsNotifier` (e.g., display a specific message if introduction fails).
+3.  **UI Polish:** Review and potentially refine the styling and layout of the `SurahIntroductionCard` now that it displays real data.
+4.  **Address Known Issues:** Revisit persistent issues like LCP measurement, viewport accessibility, etc. (if still relevant).
+5.  **Continue Core Feature Development:** Resume work on other planned features (e.g., user authentication, gamification).
 
 ## Current Considerations
 
-*   **Data Source for Introduction:** Need to finalize the source (API vs. local file parsing) for the actual introduction text.
-*   **UI Styling:** Further refinement of the `SurahIntroductionCard` styling might be needed to perfectly match the example or theme.
-*   **State Management:** The simple `useState` for expansion is suitable for now, but could be refactored if more complex interactions are needed later.
+*   **API Key Security:** Ensure the API key handling remains secure, especially if considering other build environments.
+*   **Gemini API Costs/Quotas:** Monitor usage of the Gemini API.
+*   **Introduction Caching:** Consider caching generated introductions to reduce API calls and improve load times (currently fetched every time).

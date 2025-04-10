@@ -1,4 +1,4 @@
-# Progress (as of commit 02a2c77)
+# Progress (as of commit 8e47d5c)
 
 ## What Works
 
@@ -18,10 +18,13 @@
     - ✅ Autoplay Verses toggle.
     - ✅ Reciter selection dropdown.
 - ✅ Settings persistence using `SharedPreferences`.
-- ✅ Surah Introduction Card UI implemented in `QuranReaderScreen` (using placeholder text).
+- ✅ Surah Introduction Card UI displays dynamic introduction fetched from Gemini API.
     - ✅ Displays Surah title.
-    - ✅ Displays truncated introduction text.
-    - ✅ "Read More" / "Show Less" button toggles text expansion.
+    - ✅ Displays fetched introduction text (expandable).
+    - ✅ "View Full Content" / "Show Less" button toggles text expansion.
+- ✅ Gemini API integration for Surah introductions functional.
+- ✅ State management refactored (`surahDetailsProvider`) to handle combined verse and introduction data.
+- ✅ API Key handling via `--dart-define` implemented for Vercel builds.
 
 ### Web Platform
 - ✅ Vercel deployment setup functional.
@@ -35,7 +38,7 @@
 
 ## In Progress
 
-- **Surah Introduction Data:** Need to implement fetching/loading of actual introduction text to replace placeholder.
+- **Gemini Introduction:** Introduction is fetched, but error handling and caching could be improved.
 - **Web Performance Optimization:** Ongoing efforts to improve initial load time and address Core Web Vitals. LCP measurement remains problematic.
 - **Accessibility:** Investigating how to fix the persistent `user-scalable=no` viewport issue flagged by Lighthouse.
 - **Core Feature Development:**
@@ -55,7 +58,7 @@
 
 ## Known Issues
 
-- **Placeholder Data:** Surah Introduction Card currently uses static placeholder text.
+- **Gemini Error Handling:** Basic error handling for Gemini calls exists (prints to console, uses default text), but could be more user-facing.
 - **Lighthouse LCP Error:** Lighthouse consistently fails to measure Largest Contentful Paint ("NO_LCP") for the Flutter Web build.
 - **Large Initial Bundle:** `main.dart.js` remains large, impacting initial web load time.
 - **Accessibility Viewport:** Lighthouse flags `user-scalable="no"` in the viewport meta tag.
@@ -64,4 +67,4 @@
 - **Scrolling:** Potential scrolling issues in the `QuranReaderScreen` with large Surahs (pre-pagination state).
 - **API Data:** Transliteration availability/accuracy depends on the `alquran.cloud` API.
 
-*(Note: This progress reflects the state after implementing the Surah Introduction Card UI up to commit `02a2c77`.)*
+*(Note: This progress reflects the state after implementing Gemini API integration for Surah introductions up to commit `8e47d5c`.)*

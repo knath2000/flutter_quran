@@ -13,8 +13,9 @@ class GeminiSurahService {
   }
 
   Future<String> generateSurahIntroduction(int surahNumber) async {
+    // Update prompt to specify word count
     final prompt =
-        'Provide a brief introduction to Surah $surahNumber from the Quran.';
+        'Provide a brief introduction (around 150 words) to Surah $surahNumber from the Quran, covering its main themes and significance.';
     final response = await _model.generateContent([Content.text(prompt)]);
     return response.text ?? 'No introduction available.';
   }
