@@ -26,32 +26,20 @@ class SurahIntroductionCard extends HookWidget {
             ? introductionText
             : '${introductionText.substring(0, 150)}...'; // Truncate if not expanded
 
-    // Use a Container with BoxDecoration for background image
-    return Container(
+    // Revert back to Card, remove background image properties
+    return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-      decoration: BoxDecoration(
-        // color: colorScheme.surfaceVariant.withOpacity(0.7), // Remove color completely for debugging
-        borderRadius: BorderRadius.circular(12),
-        image: const DecorationImage(
-          image: AssetImage('assets/images/dark_honeycomb_pattern.png'),
-          repeat: ImageRepeat.repeat, // Tile the image
-          opacity: 1.0, // Max opacity for debugging
-        ),
-        boxShadow: const [
-          // Replicate Card elevation with BoxShadow
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4.0,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      clipBehavior:
-          Clip.antiAlias, // Clip the background image to rounded corners
+      elevation: 2,
+      color: colorScheme.surfaceVariant.withOpacity(
+        0.5,
+      ), // Restore original semi-transparent color
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      clipBehavior: Clip.antiAlias, // Keep clipping
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              CrossAxisAlignment.center, // Center column content
           children: [
             Text(
               'Featured Surah: ${surahInfo.englishName}', // Title
@@ -59,6 +47,7 @@ class SurahIntroductionCard extends HookWidget {
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onSurfaceVariant,
               ),
+              textAlign: TextAlign.center, // Center title
             ),
             const SizedBox(height: 8),
             // Stack to allow overlaying fade and prompt
@@ -74,6 +63,7 @@ class SurahIntroductionCard extends HookWidget {
                   style: textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant.withOpacity(0.85),
                   ),
+                  textAlign: TextAlign.center, // Center intro text
                 ),
                 // Conditional Fade and "Continue Reading" overlay
                 if (!isExpanded.value && canExpand) ...[
