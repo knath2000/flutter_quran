@@ -1,87 +1,29 @@
 # Active Context
 
-## Current Focus
+## Current Focus (as of commit 770bd6c)
 
-Successfully deploying the web application to Vercel and ensuring basic app functionality across platforms (Web, iOS, Android, macOS). Preparing project for open-source contribution via GitHub.
+The primary focus at this point in the history was likely stabilizing and configuring the Vercel deployment process, specifically aligning the build artifacts (`build/web`) with the Vercel dashboard settings (Framework: Other, Output Directory: `build/web`, Build Command: `./build.sh`).
 
-## Recent Changes
+## Recent Changes (leading up to commit 770bd6c)
 
-### GitHub & Vercel Deployment Setup (April 2025)
+*   **Vercel Deployment Adjustments:** Iterations were made to the Vercel deployment configuration. This commit (`770bd6c`) specifically aimed to fix the alignment between the build output and the Vercel dashboard configuration, likely involving adjustments to `vercel.json` or the build process itself (potentially `build.sh`, although the exact changes in that commit need inspection if details are required).
+*   *(Previous history before this commit is not detailed here but involved initial project setup and feature development).*
 
-1.  **Git Initialization:** Initialized a local Git repository.
-2.  **`.gitignore` Update:** Updated `.gitignore` to exclude sensitive Firebase credentials (`lib/firebase_options.dart`, `**/GoogleService-Info.plist`, `**/google-services.json`) and project-specific files/directories (`memory-bank/`, `.clinerules`, `docs/`). Crucially, the `build/` directory ignore rule was removed to allow committing web build artifacts.
-3.  **GitHub Push:** Created an initial commit and pushed the project to the remote GitHub repository (`https://github.com/knath2000/flutter-planner.git`).
-4.  **Vercel Configuration:**
-    *   Iteratively configured Vercel deployment. Initial attempts using framework detection or explicit build commands failed due to issues finding the Flutter SDK or compiling with environment variables.
-    *   Final successful configuration involves:
-        *   Reverting `lib/main.dart` to use `DefaultFirebaseOptions.currentPlatform` (reading from `lib/firebase_options.dart`).
-        *   Ensuring `lib/firebase_options.dart` is *not* ignored by Git.
-        *   Committing the locally built `build/web` directory to the Git repository.
-        *   Using a minimal `vercel.json` specifying only SPA rewrite rules (`{ "version": 2, "rewrites": [ { "source": "/(.*)", "destination": "/index.html" } ] }`).
-        *   Configuring the Vercel project UI settings for a static deployment (Framework: `Other`, Build/Install commands: `OFF`, Output Directory: `build/web`).
-5.  **Web Deployment:** Successfully deployed the web application to Vercel using the static deployment strategy.
-6.  **Web Script Fixes:** Modified `web/index.html` to load Firebase JS SDKs using `type="module"` to resolve console errors. Removed reference to non-existent `Icon-144.png` in `web/manifest.json`.
+## Active Decisions (Likely state at commit 770bd6c)
 
-### Web Optimization (April 2025)
+*   **Vercel Deployment Strategy:** The project was likely using or moving towards a strategy where the Flutter web build is performed locally or via a script (`build.sh`), and the resulting `build/web` directory is specified as the Output Directory in Vercel dashboard settings.
+*   **Data Source:** Using local JSON (`assets/data/quran_arabic_text.json`) for Quran text.
 
-We've implemented several optimizations for the web version:
+## Next Steps (Estimated from commit 770bd6c)
 
-1. **Performance Optimizations**:
-   - Updated index.html with performance best practices
-   - Added preloading and preconnecting for critical resources
-   - Optimized JavaScript loading with defer
-   - Added Firebase Performance Monitoring
+1.  **Test Vercel Deployment:** Verify that the deployment configured up to commit `770bd6c` works correctly.
+2.  **Continue Core Feature Development:** Resume work on core Quran reader features or other planned application components.
+3.  **Refine Build/Deployment:** Further optimize or stabilize the build and deployment process if needed.
 
-2. **PWA Features**:
-   - Enhanced manifest.json with better PWA configuration
-   - Added custom service worker for offline capabilities
-   - Created offline fallback page
-   - Added support for additional icon sizes
+## Current Considerations (Estimated from commit 770bd6c)
 
-3. **Offline Support**:
-   - Implemented caching strategies for different resource types
-   - Added offline fallback page
-   - Implemented background sync for offline actions
+1.  **Vercel Build Process:** Is the current `build.sh` (if used) and dashboard configuration the optimal long-term approach?
+2.  **State Management:** Review and refine the use of Riverpod for state management as complexity grows.
+3.  **Data Persistence:** Evaluate if local JSON is sufficient or if a more robust local or cloud database solution (like Drift, Hive, or Firestore) is needed for future features (e.g., user progress, bookmarks).
 
-### macOS Build & Distribution (April 2025)
-
-1.  **App Store Submission Fix:** Resolved an App Store Connect submission error by adding the required `LSApplicationCategoryType` key (with value `public.app-category.productivity`) to `macos/Runner/Info.plist`. Submission was successful afterwards.
-2.  **Basic DMG Creation:**
-    *   Added `dmg: ^0.1.3` as a dev dependency.
-    *   Built the release app (`flutter build macos --release`).
-    *   Attempted to use `dart run dmg` but encountered issues with the package requiring signing certificates even when flags were omitted.
-    *   Successfully created a basic, unsigned `.dmg` file (`Planner_Installer.dmg`) using a sequence of `hdiutil` commands. This DMG will likely trigger Gatekeeper warnings upon installation.
-
-## Active Decisions
-
-1. **Service Worker Strategy**: We're using a dual service worker approach:
-   - Flutter's built-in service worker for Flutter-specific assets
-   - Custom service worker for enhanced caching and offline features
-
-2. **Performance Monitoring**: We've integrated Firebase Performance Monitoring to track:
-   - App startup time
-   - Page load performance
-   - Network requests
-   - UI rendering
-   - Custom operations
-
-3. **Caching Strategy**: We're using different caching strategies based on resource type:
-   - Cache-first for static assets (images, fonts, etc.)
-   - Network-first for API calls
-   - Stale-while-revalidate for HTML navigation
-
-## Next Steps
-
-1.  **Testing:** Thoroughly test the deployed Vercel web application.
-2.  **Web Optimizations:** Continue with planned web optimizations (Flutter integration, offline indicators, image optimization, etc.).
-3.  **macOS DMG (Future):** Revisit creating a signed and notarized `.dmg` once Developer ID certificate and app-specific password are set up.
-4.  **Cross-Platform Testing:** Test core functionality across all targeted platforms.
-
-## Current Considerations
-
-1.  **Vercel Deployment Strategy:** Current strategy requires committing `build/web` artifacts. Consider if a Vercel build process (using a custom build script or potentially a future official Flutter preset) is preferable long-term to avoid committing build output.
-2.  **Firebase Config in Git:** `lib/firebase_options.dart` is now committed to Git. Ensure this is acceptable and doesn't expose overly sensitive information (API keys are generally considered safe to expose for web/client-side apps, but review security implications).
-3.  **macOS Build State:** The `Release.entitlements` file appears correct for distribution, but signing/notarization prerequisites are not yet met for creating a fully trusted `.dmg`.
-3.  **Browser Compatibility**: Ensure the PWA features work across all major browsers.
-4.  **Performance Budget**: Establish performance budgets for key metrics.
-5.  **Offline UX**: Improve the user experience when offline, including clear indicators and graceful degradation.
+*(Note: This context is reconstructed based on the commit history reset. Details about specific implementations like Firebase, advanced web features, or macOS builds described previously are no longer applicable to the current HEAD commit `770bd6c`)*

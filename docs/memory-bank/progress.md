@@ -1,101 +1,41 @@
-# Progress
+# Progress (as of commit 770bd6c)
 
-## What Works (with caveats)
+## What Works (Estimated)
 
 ### Core Functionality
-- ✅ Project creation, editing, and deletion
-- ✅ Task creation, editing, and deletion
-- ✅ Task status management (complete/incomplete)
-- ✅ Task due date management
-- ✅ Project and task listing
-- ✅ Dashboard with task counts and summaries
-
-### Authentication
-- ✅ Firebase Authentication integration
-- ✅ Email/password authentication
-- ✅ Anonymous usage support
-- ✅ User-scoped data access
-- ✅ macOS build command (`flutter build macos`) now succeeds (after entitlement workaround)
-
-### Data Persistence
-- ✅ Firestore integration for cloud storage
-- ✅ User-scoped data collections
-- ✅ Real-time data synchronization
-- ✅ Offline data access (via Firestore caching)
-
-### UI/UX
-- ✅ Responsive design for mobile and desktop
-- ✅ Dark/light theme support
-- ✅ Animations for transitions and interactions
-- ✅ Error handling and user feedback
+- ✅ Basic Surah selection screen (`SurahSelectionScreen`).
+- ✅ Basic Quran reader screen (`QuranReaderScreen`) displaying verses from local JSON.
+- ✅ Loading Quran text data from `assets/data/quran_arabic_text.json`.
+- ✅ Basic UI structure and navigation (likely using GoRouter).
+- ✅ Basic theme setup (`AppTheme`).
 
 ### Web Platform
-- ✅ Web version deployment (Vercel via GitHub static deployment)
-- ✅ PWA support with offline capabilities
-- ✅ Performance optimizations
-- ✅ Service worker implementation
-- ✅ Firebase Performance Monitoring
+- ✅ Initial Vercel deployment setup (likely using `build.sh` and dashboard config).
+- ✅ Basic web build output generation.
 
-### macOS Platform
-- ✅ App Store submission successful (after adding `LSApplicationCategoryType`)
-- ✅ Basic, unsigned `.dmg` created (`Planner_Installer.dmg`) using `hdiutil`
+## In Progress (Estimated)
 
-## In Progress
+- **Vercel Deployment:** Stabilizing and refining the deployment process via `build.sh` and dashboard settings.
+- **Quran Reader UI:** Enhancing the reader screen UI/UX.
+- **State Management:** Implementing or refining Riverpod providers for data handling.
 
-### Flutter-Web Integration
-- 🔄 Platform channels for JavaScript interop
-- 🔄 Flutter integration with Performance Monitoring
+## What's Left to Build (Major items from original plan)
 
-### Offline Experience
-- 🔄 Improved offline indicators
-- 🔄 Background sync for offline actions
+- **Pagination:** Implementing verse pagination in the reader screen.
+- **Audio Playback:** Adding audio playback functionality for verses.
+- **User Progress/Gamification:** Features like tracking reading progress, badges, etc.
+- **Settings:** Implementing user-configurable settings.
+- **Data Persistence:** Moving beyond local JSON if needed (e.g., user data).
+- **Authentication:** Adding user authentication.
+- **Advanced Features:** Search, bookmarks, notes, etc.
+- **Testing:** Comprehensive unit, widget, and integration tests.
+- **Platform Enhancements:** PWA features, macOS specific improvements (signing, DMG).
 
-### Performance
-- 🔄 Image optimization
-- 🔄 Performance testing and optimization
+## Known Issues (Estimated)
 
-## What's Left to Build
+- **Scrolling:** Potential scrolling issues in the `QuranReaderScreen` if the number of verses is large (this was likely the state before pagination was attempted).
+- **Vercel Build:** The build/deployment process might still be fragile or require specific environment setup.
+- **Performance:** Initial load time or performance with large Surahs might be suboptimal.
+- **State Management:** Potential complexities or inefficiencies in the early Riverpod setup.
 
-### Enhanced PWA Features
-- ⬜ Custom installation prompt
-- ⬜ Push notifications
-- ⬜ App shortcuts for quick actions
-
-### Advanced Features
-- ⬜ Task filtering and sorting
-- ⬜ Task search
-- ⬜ Task attachments
-- ⬜ Task comments
-- ⬜ Task sharing
-- ⬜ Project templates
-
-### Analytics
-- ⬜ User behavior tracking
-- ⬜ Performance analytics integration
-- ⬜ Crash reporting
-
-### Testing
-- ⬜ Comprehensive unit tests
-- ⬜ Integration tests
-- ⬜ Performance tests
-- ⬜ Accessibility tests
-
-## Known Issues
-
-### macOS
-- ⚠️ **Firebase Authentication (Sign-up/Sign-in) FAILS at runtime** in command-line builds (`flutter run`/`flutter build`). This is due to temporarily removing Network Client and Keychain Sharing entitlements from `.entitlements` files to bypass code signing errors during local CLI builds.
-- ⚠️ **Workaround:** To test macOS auth, build and run directly from Xcode after configuring code signing (Personal Team or Developer ID).
-- ⚠️ **Release Builds:** `Release.entitlements` appears correct, but proper code signing (Developer ID certificate) and notarization (app-specific password) must be configured before creating a distributable `.dmg` or App Store build that avoids Gatekeeper warnings.
-- ⚠️ Basic `.dmg` created via `hdiutil` is unsigned and will trigger Gatekeeper warnings.
-
-### Performance
-- ⚠️ Global task views don't work efficiently (would require Firestore Collection Group queries)
-- ⚠️ Initial load time could be improved
-
-### Offline
-- ⚠️ Limited feedback when offline actions are queued
-- ⚠️ No visual indicator for offline state
-
-### Web
-- ⚠️ PWA installation experience needs improvement
-- ⚠️ Some animations may cause performance issues on low-end devices
+*(Note: This progress reflects the estimated state after resetting to commit `770bd6c`. Features like Firestore integration, advanced PWA/macOS support, pagination, and audio playback mentioned previously are not present in this version.)*
