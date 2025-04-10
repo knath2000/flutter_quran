@@ -28,9 +28,8 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.home,
         builder: (BuildContext context, GoRouterState state) {
-          // TEMP: Point the home route to a simple Scaffold for LCP testing
-          // return const SurahSelectionScreen();
-          return const Scaffold(body: Center(child: Text('LCP Test')));
+          // Point the home route to the SurahSelectionScreen
+          return const SurahSelectionScreen();
         },
         routes: <RouteBase>[
           // Nested route for the reader screen
