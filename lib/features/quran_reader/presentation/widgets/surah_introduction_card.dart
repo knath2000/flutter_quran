@@ -46,11 +46,71 @@ class SurahIntroductionCard extends HookWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              displayedText, // Display truncated or full text
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant.withOpacity(0.85),
-              ),
+            // Stack to allow overlaying fade and prompt
+            Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                // The main text content
+                Text(
+                  displayedText,
+                  // Limit max lines when not expanded to help with fade calculation
+                  maxLines: !isExpanded.value && canExpand ? 4 : null,
+                  overflow: TextOverflow.clip, // Clip instead of ellipsis
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant.withOpacity(0.85),
+                  ),
+                ),
+                // Conditional Fade and "Continue Reading" overlay
+                if (!isExpanded.value && canExpand) ...[
+                  // Gradient Fade using ShaderMask
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: const [0.0, 0.6, 1.0], // Start fade later
+                          colors: [
+                            colorScheme.surfaceVariant.withOpacity(
+                              0.0,
+                            ), // Transparent at top
+                            colorScheme.surfaceVariant.withOpacity(
+                              0.9,
+                            ), // Semi-transparent middle
+                            colorScheme.surfaceVariant.withOpacity(
+                              1.0,
+                            ), // Opaque at bottom matching card
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // "Continue Reading" Text Overlay
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 4.0,
+                    ), // Position slightly above bottom
+                    child: Text(
+                      'Continue reading to learn about the historical background and significance of ${surahInfo.englishName}...',
+                      textAlign: TextAlign.center,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.primary.withOpacity(
+                          0.9,
+                        ), // Use primary color, slightly transparent
+                        fontWeight: FontWeight.bold,
+                        shadows: [
+                          // Add subtle shadow for readability
+                          Shadow(
+                            blurRadius: 4.0,
+                            color: colorScheme.surfaceVariant.withOpacity(0.7),
+                            offset: const Offset(1.0, 1.0),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
             if (canExpand) ...[
               const SizedBox(height: 12),
