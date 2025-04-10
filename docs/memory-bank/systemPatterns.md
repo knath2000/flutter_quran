@@ -57,10 +57,11 @@ Each feature follows a simplified clean architecture approach:
 ## State Management
 
 ### Riverpod Providers
-- `StreamProvider`: For reactive data streams from Firestore
-- `StateProvider`: For simple state management
-- `StateNotifierProvider`: For more complex state management
-- `Provider`: For derived state and dependencies
+- `StreamProvider`: For reactive data streams (e.g., from Firestore, though not currently used for main Quran data).
+- `StateProvider`: For simple state management (e.g., `showTranslationProvider`, `showTransliterationProvider`, `fontSizeScaleFactorProvider`, `selectedReciterProvider`, `autoplayEnabledProvider`).
+- `StateNotifierProvider`: For more complex state management (e.g., `audioPlaybackStateProvider`, `audioProgressProvider`).
+- `Provider`: For derived state and dependencies (e.g., `quranRepositoryProvider`, `sharedPreferencesServiceProvider`, `apiClientProvider`).
+- `FutureProvider`: For asynchronous initialization or data fetching (e.g., `jsonDataSourceInitializerProvider`, `arabicJsonTextProvider`).
 
 ### State Flow
 1. UI subscribes to providers

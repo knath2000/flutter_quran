@@ -14,6 +14,14 @@
   - **Authentication**: User authentication
   - **Hosting**: Web app hosting
   - **Performance Monitoring**: Performance tracking and analysis
+### External APIs
+- **alquran.cloud API**: Used for fetching Quran data including:
+  - Surah list metadata (`/meta`)
+  - Verse details (`/surah/{surahNumber}/editions/...`) using editions:
+    - Arabic Text: `quran-uthmani`
+    - English Translation: `en.sahih`
+    - Audio Recitation: `ar.alafasy` (configurable via settings)
+    - English Transliteration: `en.transliteration` (configurable via settings)
 
 ### Web Technologies
 - **PWA**: Progressive Web App capabilities
