@@ -1,29 +1,38 @@
 # Active Context
 
-## Current Focus (as of commit 770bd6c)
+## Current Focus (as of commit 99eb9ae)
 
-The primary focus at this point in the history was likely stabilizing and configuring the Vercel deployment process, specifically aligning the build artifacts (`build/web`) with the Vercel dashboard settings (Framework: Other, Output Directory: `build/web`, Build Command: `./build.sh`).
+The focus has shifted to optimizing the web application's performance based on Lighthouse reports, particularly addressing initial load time and Core Web Vitals like Largest Contentful Paint (LCP).
 
-## Recent Changes (leading up to commit 770bd6c)
+## Recent Changes (leading up to commit 99eb9ae)
 
-*   **Vercel Deployment Adjustments:** Iterations were made to the Vercel deployment configuration. This commit (`770bd6c`) specifically aimed to fix the alignment between the build output and the Vercel dashboard configuration, likely involving adjustments to `vercel.json` or the build process itself (potentially `build.sh`, although the exact changes in that commit need inspection if details are required).
-*   *(Previous history before this commit is not detailed here but involved initial project setup and feature development).*
+*   **Performance Analysis:** Reviewed Lighthouse and Chrome DevTools Performance reports for the Vercel deployment (`https://onlyquran420.vercel.app/`). Identified bottlenecks: LCP measurement error (NO_LCP), large initial JS bundle (`main.dart.js`), high JS execution time, and large asset downloads (Google CDN, fonts).
+*   **Configuration Fixes:**
+    *   Corrected `web/robots.txt` to allow crawlers. (Commit: `ee0e64e`)
+    *   Added `lang="en"` attribute to `<html>` tag in `web/index.html`. (Commit: `ee0e64e`)
+    *   Attempted to fix viewport accessibility (`user-scalable=no`) by modifying `web/index.html`, but the issue persists in Lighthouse reports, likely due to Flutter build overrides. (Commit: `ee0e64e`)
+*   **Deferred Loading:** Implemented deferred loading (`deferred as` + `FutureBuilder`) for `QuranReaderScreen`, `SettingsScreen`, and `BadgesScreen` in `lib/features/navigation/app_router.dart` to potentially improve post-initial-load navigation. (Commit: `ee0e64e`)
+*   **Font Preloading:** Added `<link rel="preload">` tags for primary web fonts in `web/index.html` to encourage earlier downloads. (Commit: `ee0e64e`)
+*   **Renderer Testing:**
+    *   Tested building with the HTML renderer by adding configuration to `web/index.html`. (Commit: `a274166`)
+    *   Tested simplifying the initial route to isolate LCP issues. (Commit: `1fae73c`)
+    *   Reverted initial route simplification. (Commit: `6041994`)
+    *   Reverted HTML renderer configuration as it didn't resolve the LCP measurement error. (Commit: `99eb9ae`)
 
-## Active Decisions (Likely state at commit 770bd6c)
+## Active Decisions
 
-*   **Vercel Deployment Strategy:** The project was likely using or moving towards a strategy where the Flutter web build is performed locally or via a script (`build.sh`), and the resulting `build/web` directory is specified as the Output Directory in Vercel dashboard settings.
-*   **Data Source:** Using local JSON (`assets/data/quran_arabic_text.json`) for Quran text.
+*   **Renderer:** Reverted to Flutter's default web renderer selection (likely CanvasKit for desktop) after testing showed the HTML renderer didn't resolve the LCP measurement issue in Lighthouse.
+*   **Optimization Strategy:** Focused on configuration fixes, deferred loading for secondary routes, and font preloading. Further LCP optimization might require deeper investigation into Flutter Web's initial rendering or alternative approaches.
 
-## Next Steps (Estimated from commit 770bd6c)
+## Next Steps
 
-1.  **Test Vercel Deployment:** Verify that the deployment configured up to commit `770bd6c` works correctly.
-2.  **Continue Core Feature Development:** Resume work on core Quran reader features or other planned application components.
-3.  **Refine Build/Deployment:** Further optimize or stabilize the build and deployment process if needed.
+1.  **Monitor Performance:** Observe the real-world performance and loading experience, despite the LCP measurement issue in Lighthouse.
+2.  **Investigate Viewport Issue:** Research how to correctly configure the viewport in Flutter Web builds to allow user scaling and pass the accessibility check.
+3.  **Further Bundle Size Reduction:** If initial load remains slow, investigate more aggressive code splitting or alternative asset loading strategies.
+4.  **Continue Core Feature Development:** Resume work on core application features as planned.
 
-## Current Considerations (Estimated from commit 770bd6c)
+## Current Considerations
 
-1.  **Vercel Build Process:** Is the current `build.sh` (if used) and dashboard configuration the optimal long-term approach?
-2.  **State Management:** Review and refine the use of Riverpod for state management as complexity grows.
-3.  **Data Persistence:** Evaluate if local JSON is sufficient or if a more robust local or cloud database solution (like Drift, Hive, or Firestore) is needed for future features (e.g., user progress, bookmarks).
-
-*(Note: This context is reconstructed based on the commit history reset. Details about specific implementations like Firebase, advanced web features, or macOS builds described previously are no longer applicable to the current HEAD commit `770bd6c`)*
+1.  **LCP Measurement:** Acknowledging the difficulty in getting an accurate LCP score from Lighthouse for this Flutter Web app. Focus might shift to other metrics (FCP, SI, TTI if measurable) and user-perceived performance.
+2.  **Accessibility:** The persistent `user-scalable=no` issue needs resolution.
+3.  **CanvasKit vs HTML:** While reverted for now, the HTML renderer remains an option if specific performance characteristics or compatibility issues arise with CanvasKit.
