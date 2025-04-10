@@ -11,7 +11,7 @@ class GeminiSurahService {
   GeminiSurahService() {
     // Update to use the specified experimental model
     _model = GenerativeModel(
-      model: 'gemini-2.0-flash-exp-01-21',
+      model: 'gemini-2.0-flash-thinking-exp-01-21', // Use correct alias
       apiKey: apiKey,
     );
   }
