@@ -9,11 +9,8 @@ class GeminiSurahService {
   late final GenerativeModel _model;
 
   GeminiSurahService() {
-    // Update to use the specified experimental model
-    _model = GenerativeModel(
-      model: 'gemini-2.0-flash-thinking-exp-01-21', // Use correct alias
-      apiKey: apiKey,
-    );
+    // Revert to standard flash model
+    _model = GenerativeModel(model: 'gemini-2.0-flash', apiKey: apiKey);
   }
 
   Future<String> generateSurahIntroduction(int surahNumber) async {
