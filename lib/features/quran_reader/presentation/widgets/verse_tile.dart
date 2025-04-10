@@ -240,11 +240,16 @@ class _VerseTileState extends ConsumerState<VerseTile> {
                   padding: const EdgeInsets.only(left: 38.0),
                   child: Text(
                     widget.verse.transliterationText!,
-                    style: textTheme.bodySmall?.copyWith(
-                      fontStyle: FontStyle.italic,
-                      color: colorScheme.onSurface.withOpacity(0.6),
+                    textAlign: TextAlign.center, // Center align the text
+                    style: textTheme.bodyMedium?.copyWith(
+                      // Use bodyMedium style like translation
+                      // fontStyle: FontStyle.italic, // Remove italic
+                      color: colorScheme.onSurface.withOpacity(
+                        0.7,
+                      ), // Slightly less prominent than translation
                       fontSize:
-                          (textTheme.bodySmall?.fontSize ?? 12) * fontSizeScale,
+                          (textTheme.bodyMedium?.fontSize ?? 14) *
+                          fontSizeScale, // Match translation size base
                     ),
                   ),
                 ),
