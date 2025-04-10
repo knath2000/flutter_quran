@@ -1,36 +1,38 @@
 # Active Context
 
-## Current Focus (as of commit c99fc38)
+## Current Focus (as of commit 02a2c77)
 
-The focus was on implementing the display of verse transliterations below the English translation in the Quran reader view, controlled by a user setting.
+The focus was on implementing the UI structure for a Surah introduction/summary section at the top of the `QuranReaderScreen`, mirroring a provided example and using placeholder text for now.
 
-## Recent Changes (leading up to commit c99fc38)
+## Recent Changes (leading up to commit 02a2c77)
 
-*   **Transliteration Feature Implementation:**
-    *   Updated `QuranApiDataSource` to fetch the `en.transliteration` edition from the `alquran.cloud` API alongside existing editions (Arabic, translation, audio).
-    *   Confirmed `Verse` model already supported an optional `transliterationText` field and `fromJson` override.
-    *   Confirmed `SharedPreferencesService` already had methods to get/set the `showTransliteration` preference.
-    *   Confirmed `settings_providers.dart` already had a `showTransliterationProvider` (StateProvider) linked to SharedPreferences.
-    *   Updated `VerseTile` widget to watch `showTransliterationProvider` and conditionally display the `verse.transliterationText` based on the provider's state.
-    *   Confirmed `SettingsScreen` already had a `SwitchListTile` to control the `showTransliterationProvider`.
-*   **(Previous) Web Performance Optimization:** Addressed Lighthouse issues, implemented deferred loading, font preloading, and tested web renderers. SEO/Best Practices improved, but LCP measurement issues persist. (Commits: `ee0e64e` to `99eb9ae`)
+*   **Surah Introduction UI:**
+    *   Updated `SurahInfo` model (`lib/core/models/surah_info.dart`) to include an optional `introduction` field.
+    *   Created a new `SurahIntroductionCard` widget (`lib/features/quran_reader/presentation/widgets/surah_introduction_card.dart`) using `flutter_hooks` for state management (expansion toggle).
+        *   Displays Surah name, truncated introduction text, and a "View Full Content" / "Show Less" button.
+        *   Uses placeholder text for the introduction content.
+        *   Styled to resemble the provided screenshot example.
+    *   Added `flutter_hooks` dependency to `pubspec.yaml` and ran `flutter pub get`.
+    *   Integrated `SurahIntroductionCard` into `QuranReaderScreen`, placing it above the verse list. It fetches the relevant `SurahInfo` from the `surahListProvider` to display the title.
+*   **(Previous) Transliteration Feature:** Implemented display of verse transliterations below translations, controlled by a user setting. Updated API calls and UI accordingly. (Commit: `c99fc38`)
+*   **(Previous) Web Performance Optimization:** Addressed Lighthouse issues, implemented deferred loading, font preloading, etc. (Commits: `ee0e64e` to `99eb9ae`)
 
 ## Active Decisions
 
-*   **Transliteration Source:** Using the `en.transliteration` edition from `alquran.cloud`.
-*   **Transliteration Display:** Displayed below the English translation in `VerseTile`.
-*   **Transliteration Control:** Visibility is controlled by a user setting (`showTransliterationProvider`), accessible via a switch in the `SettingsScreen`. Default is `true`.
-*   **Missing Data Handling:** If transliteration text is null or empty (either from API or setting is off), nothing is displayed (no placeholder).
+*   **Surah Introduction Data:** Using placeholder text within the `SurahIntroductionCard` widget for now. Actual data fetching (from API or local file) is deferred.
+*   **UI Placement:** The introduction card is placed at the top of the `QuranReaderScreen`'s body content.
+*   **Expansion:** The card includes basic expand/collapse functionality managed by internal state (`useState`).
 
 ## Next Steps
 
-1.  **Test Transliteration Feature:** Thoroughly test the display of transliterations, the settings toggle, persistence, and handling of potentially missing data across different platforms (Web, macOS, iOS).
-2.  **Update Memory Bank:** Complete the documentation update for this feature in `progress.md`, `techContext.md`, and `systemPatterns.md`.
-3.  **Address Known Issues:** Revisit persistent issues like LCP measurement, viewport accessibility, and potentially large bundle size.
-4.  **Continue Core Feature Development:** Resume work on other planned features (e.g., pagination, audio improvements).
+1.  **Test Surah Introduction UI:** Verify the card appears correctly, uses placeholder text, expands/collapses, and styling is acceptable across different screen sizes.
+2.  **Implement Actual Data Fetching:** Plan and implement the logic to fetch real Surah introduction data (e.g., from an API endpoint or the `surahdesc.rtf` file mentioned previously) and replace the placeholder text.
+3.  **Update Memory Bank:** Complete the documentation update for this UI implementation in `progress.md` and `systemPatterns.md`.
+4.  **Address Known Issues:** Revisit persistent issues like LCP measurement, viewport accessibility, etc.
+5.  **Continue Core Feature Development:** Resume work on other planned features.
 
 ## Current Considerations
 
-1.  **API Reliability:** Monitor the `alquran.cloud` API for consistent availability of the `en.transliteration` edition.
-2.  **Transliteration Accuracy:** The quality/standard of the provided transliteration depends on the API source.
-3.  **UI Layout:** Ensure the added transliteration text fits well within the `VerseTile` layout across different font sizes and screen widths.
+*   **Data Source for Introduction:** Need to finalize the source (API vs. local file parsing) for the actual introduction text.
+*   **UI Styling:** Further refinement of the `SurahIntroductionCard` styling might be needed to perfectly match the example or theme.
+*   **State Management:** The simple `useState` for expansion is suitable for now, but could be refactored if more complex interactions are needed later.

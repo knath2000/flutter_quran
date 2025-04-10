@@ -71,6 +71,8 @@ Each feature follows a simplified clean architecture approach:
 5. Repository methods update Firestore
 6. Firestore updates trigger UI updates
 
+### Local Widget State
+- For simple, self-contained UI state within a widget (like the expansion state of `SurahIntroductionCard`), `flutter_hooks` (specifically `useState`) is used to avoid the boilerplate of a full `StatefulWidget`.
 ## Navigation
 
 ### Go Router
