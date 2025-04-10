@@ -87,6 +87,9 @@ class _VerseTileState extends ConsumerState<VerseTile> {
 
     final playbackState = ref.watch(audioPlaybackStateProvider);
     final progressState = ref.watch(audioProgressProvider);
+    final showTransliteration = ref.watch(
+      showTransliterationProvider,
+    ); // Watch the setting
     final jsonSource = ref.watch(
       quranTextSourceProvider,
     ); // Check if JSON source is available
@@ -228,7 +231,9 @@ class _VerseTileState extends ConsumerState<VerseTile> {
                 ),
 
               // Transliteration
-              if (widget.verse.transliterationText != null &&
+              // Conditionally display Transliteration based on setting and availability
+              if (showTransliteration &&
+                  widget.verse.transliterationText != null &&
                   widget.verse.transliterationText!.isNotEmpty) ...[
                 const SizedBox(height: 6),
                 Padding(

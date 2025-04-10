@@ -69,11 +69,13 @@ class QuranApiDataSource {
     String arabicEdition = 'quran-uthmani', // Default Arabic edition
     String translationEdition = 'en.sahih', // Example English translation
     String audioEdition = 'ar.alafasy', // Example Audio edition
+    String transliterationEdition =
+        'en.transliteration', // Default transliteration
   }) async {
     try {
       // Construct the endpoint to fetch multiple editions for the surah
       final endpoint =
-          '/surah/$surahNumber/editions/$arabicEdition,$translationEdition,$audioEdition';
+          '/surah/$surahNumber/editions/$arabicEdition,$translationEdition,$audioEdition,$transliterationEdition';
       final response = await _dio.get(endpoint);
 
       if (response.statusCode == 200 && response.data != null) {
@@ -81,9 +83,10 @@ class QuranApiDataSource {
             response.data as Map<String, dynamic>?;
         final List<dynamic>? editionsData = data?['data'] as List<dynamic>?;
 
-        if (editionsData == null || editionsData.length < 3) {
+        // Expecting 4 editions now: Arabic, Translation, Audio, Transliteration
+        if (editionsData == null || editionsData.length < 4) {
           throw Exception(
-            'Failed to parse Surah details: Missing required editions in response.',
+            'Failed to parse Surah details: Missing required editions (Arabic, Translation, Audio, Transliteration) in response.',
           );
         }
 
@@ -100,6 +103,10 @@ class QuranApiDataSource {
           (e) => e['edition']['identifier'] == audioEdition,
           orElse: () => null,
         );
+        final transliterationData = editionsData.firstWhere(
+          (e) => e['edition']['identifier'] == transliterationEdition,
+          orElse: () => null,
+        );
 
         if (arabicData == null || arabicData['ayahs'] == null) {
           throw Exception(
@@ -110,6 +117,8 @@ class QuranApiDataSource {
         final List<dynamic> arabicAyahs = arabicData['ayahs'];
         final List<dynamic>? translationAyahs = translationData?['ayahs'];
         final List<dynamic>? audioAyahs = audioData?['ayahs'];
+        final List<dynamic>? transliterationAyahs =
+            transliterationData?['ayahs'];
 
         List<Verse> verses = [];
         for (int i = 0; i < arabicAyahs.length; i++) {
@@ -125,6 +134,10 @@ class QuranApiDataSource {
             (a) => a['numberInSurah'] == currentNumberInSurah,
             orElse: () => null,
           );
+          final transliterationJson = transliterationAyahs?.firstWhere(
+            (tr) => tr['numberInSurah'] == currentNumberInSurah,
+            orElse: () => null,
+          );
 
           verses.add(
             Verse.fromJson(
@@ -132,7 +145,8 @@ class QuranApiDataSource {
               // Pass overrides from other editions
               audioUrlOverride: audioJson?['audio'] as String?,
               translationTextOverride: translationJson?['text'] as String?,
-              // Transliteration would require another edition if needed
+              transliterationTextOverride:
+                  transliterationJson?['text'] as String?,
             ),
           );
         }
