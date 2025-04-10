@@ -6,8 +6,9 @@ import 'package:quran_flutter/core/audio/playback_state.dart'; // Import playbac
 import 'package:quran_flutter/core/models/surah_info.dart'; // Import SurahInfo
 import 'package:quran_flutter/core/models/verse.dart';
 import 'package:quran_flutter/features/quran_reader/application/providers/surah_details_provider.dart';
-import 'package:quran_flutter/features/quran_reader/application/providers/surah_list_provider.dart'; // Import SurahList provider
-import 'package:quran_flutter/features/quran_reader/presentation/widgets/surah_introduction_card.dart'; // Import new widget
+import 'package:quran_flutter/features/quran_reader/application/providers/surah_list_provider.dart';
+import 'package:quran_flutter/features/quran_reader/application/providers/surah_introduction_provider.dart'; // Import new provider
+import 'package:quran_flutter/features/quran_reader/presentation/widgets/surah_introduction_card.dart';
 import 'package:quran_flutter/features/quran_reader/presentation/widgets/verse_tile.dart';
 import 'package:quran_flutter/features/settings/application/settings_providers.dart';
 import 'package:quran_flutter/shared/widgets/starry_background.dart';
@@ -55,8 +56,12 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
     final playbackState = ref.watch(
       audioPlaybackStateProvider,
     ); // Watch playback state
-    final surahListAsync = ref.watch(surahListProvider); // Watch surah list
-
+    final surahListAsync = ref.watch(
+      surahListProvider,
+    ); // Still needed for name
+    final introductionAsync = ref.watch(
+      surahIntroductionProvider(widget.surahNumber),
+    ); // Watch new provider
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.surahName ?? 'Surah ${widget.surahNumber}'),
@@ -105,42 +110,40 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
             // Wrap content in a Column
             children: [
               // Display Surah Introduction Card (using placeholder)
-              surahListAsync.when(
-                data: (surahList) {
-                  final currentSurahInfo = surahList.firstWhere(
-                    (s) => s.number == widget.surahNumber,
-                    orElse:
-                        () => SurahInfo(
-                          // Basic fallback if not found
-                          number: widget.surahNumber,
-                          name: 'Surah ${widget.surahNumber}',
-                          englishName:
-                              widget.surahName ?? 'Surah ${widget.surahNumber}',
-                          englishNameTranslation: '',
-                          revelationType: '',
-                          numberOfAyahs: 0,
-                        ),
-                  );
-                  // Create a copy with placeholder - actual data fetch planned later
-                  final infoWithPlaceholder = SurahInfo(
-                    number: currentSurahInfo.number,
-                    name: currentSurahInfo.name,
-                    englishName: currentSurahInfo.englishName,
-                    englishNameTranslation:
-                        currentSurahInfo.englishNameTranslation,
-                    revelationType: currentSurahInfo.revelationType,
-                    numberOfAyahs: currentSurahInfo.numberOfAyahs,
-                    introduction: null, // Let the card handle placeholder logic
-                  );
-                  return SurahIntroductionCard(surahInfo: infoWithPlaceholder);
-                },
-                loading:
-                    () =>
-                        const SizedBox.shrink(), // Don't show anything while list loads
-                error:
-                    (e, st) =>
-                        const SizedBox.shrink(), // Don't show card on error
-              ),
+              // Pass introduction AsyncValue and Surah name to the card
+              SurahIntroductionCard(
+                introductionAsync: introductionAsync,
+                // Get surah name from list provider or fallback
+                surahName: surahListAsync.when(
+                  data: (list) {
+                    // Find the SurahInfo, provide a default if not found
+                    final info = list.firstWhere(
+                      (s) => s.number == widget.surahNumber,
+                      orElse:
+                          () => SurahInfo(
+                            // Return default SurahInfo here
+                            number: widget.surahNumber,
+                            name: 'Surah ${widget.surahNumber}',
+                            englishName:
+                                widget.surahName ??
+                                'Surah ${widget.surahNumber}',
+                            englishNameTranslation: '',
+                            revelationType: '',
+                            numberOfAyahs: 0,
+                          ),
+                    );
+                    return info
+                        .englishName; // Return the name from the found/default info
+                  },
+                  // Provide default names during loading/error states
+                  loading:
+                      () => widget.surahName ?? 'Surah ${widget.surahNumber}',
+                  error:
+                      (_, __) =>
+                          widget.surahName ?? 'Surah ${widget.surahNumber}',
+                ),
+              ), // Close SurahIntroductionCard
+              // Removed extraneous lines from previous incorrect diff
 
               // Existing Verse List (Expanded to fill remaining space)
               Expanded(
