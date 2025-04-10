@@ -30,14 +30,12 @@ class SurahIntroductionCard extends HookWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(
-          0.7,
-        ), // Further decrease opacity
+        // color: colorScheme.surfaceVariant.withOpacity(0.7), // Remove color completely for debugging
         borderRadius: BorderRadius.circular(12),
         image: const DecorationImage(
           image: AssetImage('assets/images/dark_honeycomb_pattern.png'),
           repeat: ImageRepeat.repeat, // Tile the image
-          opacity: 0.2, // Increase pattern visibility significantly for testing
+          opacity: 1.0, // Max opacity for debugging
         ),
         boxShadow: const [
           // Replicate Card elevation with BoxShadow
