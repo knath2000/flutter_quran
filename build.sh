@@ -27,6 +27,6 @@ flutter config --enable-web
 
 # Let flutter build handle pub get implicitly, using the defined PUB_CACHE
 echo ">>> Building Flutter Web..."
-flutter build web --release --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY
+flutter build web --release --source-maps --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY
 
 echo ">>> Build Script Completed."
