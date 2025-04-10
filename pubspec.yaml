@@ -40,6 +40,7 @@ dependencies:
   riverpod_annotation: ^2.3.5 # Code generation for Riverpod (optional but recommended)
   go_router: ^14.2.1 # Navigation
   dio: ^5.5.0+1 # Data Fetching
+  google_generative_ai: ^0.2.0  # For Gemini API integration
   just_audio: ^0.9.39 # Audio Playback
   hive: ^2.2.3 # Data Persistence (DB)
   hive_flutter: ^1.1.0 # Flutter helpers for Hive
