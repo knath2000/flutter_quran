@@ -1,6 +1,6 @@
 # Active Context
 
-## Current Focus (as of commit 4f10a98)
+## Current Focus (as of commit cc8a5ed)
 
 The focus was on successfully integrating the Google Gemini API to dynamically fetch Surah introductions and display them in the `QuranReaderScreen`. This involved resolving API key handling issues, refactoring state management, and updating UI components.
 
@@ -25,6 +25,11 @@ The focus was on successfully integrating the Google Gemini API to dynamically f
     *   Fixed Vercel build errors related to Flutter SDK version and dependency conflicts (`flutter_lints`).
     *   Applied minor `const` optimizations to `SurahSelectionScreen`.
     *   Enabled source maps in web release builds (`--source-maps` in `build.sh`).
+*   **Hive Caching:**
+    *   Implemented Hive caching for Surah verses (`QuranRepository`) and introductions (`SurahDetailsNotifier`).
+    *   Added Hive annotations to `Verse` model and generated `VerseAdapter` using build_runner.
+    *   Registered `VerseAdapter` and opened new Hive boxes (`quranVerseCache`, `surahIntroductionCache`) in `main.dart`.
+    *   Fixed a build error by correcting type casting (`List` to `Set`) in the generated `user_progress.g.dart` adapter.
 
 ## Active Decisions
 
@@ -33,6 +38,7 @@ The focus was on successfully integrating the Google Gemini API to dynamically f
 *   **State Structure:** `surahDetailsProvider` now manages a combined state `AsyncValue<(List<Verse>, String)>` to hold both verses and the introduction.
 *   **UI Integration:** `SurahIntroductionCard` displays the introduction fetched via `surahDetailsProvider`.
 *   **Web Renderer:** Explicitly using the HTML renderer for web builds.
+*   **Caching Strategy:** Using Hive (backed by IndexedDB on web) for local caching of verses and introductions to improve performance on subsequent loads.
 
 ## Next Steps
 
@@ -47,6 +53,6 @@ The focus was on successfully integrating the Google Gemini API to dynamically f
 
 *   **API Key Security:** Ensure the API key handling remains secure, especially if considering other build environments.
 *   **Gemini API Costs/Quotas:** Monitor usage of the Gemini API.
-*   **Introduction Caching:** Consider caching generated introductions to reduce API calls and improve load times (currently fetched every time).
+*   **Hive Adapters:** Ensure Hive type adapters (`.g.dart` files) are regenerated via build_runner if underlying models change significantly.
 *   **Viewport Accessibility:** The `user-scalable=no` issue persists due to Flutter's build process overriding `index.html`.
 *   **Bundle Size:** Further JS bundle size reduction likely requires advanced analysis tools (DevTools, source-map-explorer).

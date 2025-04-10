@@ -73,24 +73,21 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
           data: (list) {
             final info = list.firstWhere(
               (s) => s.number == widget.surahNumber,
-              orElse:
-                  () => SurahInfo(
-                    number: widget.surahNumber,
-                    name: 'Surah ${widget.surahNumber}',
-                    englishName:
-                        widget.surahName ?? 'Surah ${widget.surahNumber}',
-                    englishNameTranslation: '',
-                    revelationType: '',
-                    numberOfAyahs: 0,
-                  ),
+              orElse: () => SurahInfo(
+                number: widget.surahNumber,
+                name: 'Surah ${widget.surahNumber}',
+                englishName: widget.surahName ?? 'Surah ${widget.surahNumber}',
+                englishNameTranslation: '',
+                revelationType: '',
+                numberOfAyahs: 0,
+              ),
             );
             return Text(info.englishName); // Display English Name
           },
-          loading:
-              () => Text(widget.surahName ?? 'Surah ${widget.surahNumber}'),
-          error:
-              (_, __) =>
-                  Text(widget.surahName ?? 'Surah ${widget.surahNumber}'),
+          loading: () =>
+              Text(widget.surahName ?? 'Surah ${widget.surahNumber}'),
+          error: (_, __) =>
+              Text(widget.surahName ?? 'Surah ${widget.surahNumber}'),
         ),
         actions: [
           // Conditionally display Autoplay Indicator
@@ -132,100 +129,101 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
                 end: Alignment.bottomCenter,
               ),
             ),
-          ),
-          Column(
-            // Wrap content in a Column
-            children: [
-              // Display Surah Introduction Card (using placeholder)
-              // Pass introduction AsyncValue and Surah name to the card
-              SurahIntroductionCard(
-                introductionAsync: introductionAsyncValue, // Pass derived value
-                // Get surah name from list provider or fallback
-                surahName: surahListAsync.when(
-                  data: (list) {
-                    // Find the SurahInfo, provide a default if not found
-                    final info = list.firstWhere(
-                      (s) => s.number == widget.surahNumber,
-                      orElse:
-                          () => SurahInfo(
-                            // Return default SurahInfo here
-                            number: widget.surahNumber,
-                            name: 'Surah ${widget.surahNumber}',
-                            englishName:
-                                widget.surahName ??
-                                'Surah ${widget.surahNumber}',
-                            englishNameTranslation: '',
-                            revelationType: '',
-                            numberOfAyahs: 0,
-                          ),
-                    );
-                    return info
-                        .englishName; // Return the name from the found/default info
-                  },
-                  // Provide default names during loading/error states
-                  loading:
-                      () => widget.surahName ?? 'Surah ${widget.surahNumber}',
-                  error:
-                      (_, __) =>
-                          widget.surahName ?? 'Surah ${widget.surahNumber}',
-                ),
-              ), // Close SurahIntroductionCard
-              // Removed extraneous lines from previous incorrect diff
+          ), // Add comma here
+          // Directly use the AsyncValue builder for the main content list
+          surahDetailsAsync.when(
+            // Accept the record as 'data'
+            data: (data) {
+              // Access verses using data.$1
+              final verses = data.$1;
+              // Access introduction using data.$2 (used in SurahIntroductionCard)
 
-              // Existing Verse List (Expanded to fill remaining space)
-              Expanded(
-                child: surahDetailsAsync.when(
-                  // Accept the record as 'data'
-                  data: (data) {
-                    // Access verses using data.$1
-                    final verses = data.$1;
-                    // Access introduction using data.$2 (if needed here)
-                    // final introduction = data.$2;
-                    if (verses.isEmpty) {
-                      return const Center(
-                        child: Text(
-                          'No verses found for this Surah.',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      );
-                    }
-                    // Data prep for autoplay removed (handled by service)
+              if (verses.isEmpty && introductionAsyncValue is! AsyncData) {
+                // Show loading or error for introduction if verses are empty
+                return introductionAsyncValue.when(
+                  data: (intro) => const Center(
+                    child: Text(
+                      'No verses found, but introduction loaded.', // Or handle appropriately
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (e, st) => Center(
+                    child: Text(
+                      'No verses found and failed to load introduction.\nError: $e',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                );
+              }
 
-                    // Display verses in a list
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
-                      itemCount: verses.length,
-                      itemBuilder: (context, index) {
-                        final Verse verse = verses[index];
-                        // Use the dedicated VerseTile widget
-                        return VerseTile(
-                          verse: verse,
-                          surahNumber: widget.surahNumber,
-                          // Parameters removed in previous step
-                        );
-                      },
-                    );
-                  },
-                  loading:
-                      () => const Center(child: CircularProgressIndicator()),
-                  error: (error, stackTrace) {
-                    print(
-                      'Error loading Surah ${widget.surahNumber} details UI: $error\n$stackTrace',
-                    );
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          'Failed to load verses for Surah ${widget.surahNumber}.\nError: $error',
-                          style: const TextStyle(color: Colors.white),
-                        ),
+              // Display introduction and verses in a single scrollable list
+              return ListView.builder(
+                padding: const EdgeInsets.all(8.0),
+                // Add 1 to item count for the introduction card
+                itemCount: verses.length + 1,
+                itemBuilder: (context, index) {
+                  // Index 0 is the introduction card
+                  if (index == 0) {
+                    return SurahIntroductionCard(
+                      introductionAsync:
+                          introductionAsyncValue, // Pass derived value
+                      // Get surah name from list provider or fallback
+                      surahName: surahListAsync.when(
+                        data: (list) {
+                          final info = list.firstWhere(
+                            (s) => s.number == widget.surahNumber,
+                            orElse: () => SurahInfo(
+                              number: widget.surahNumber,
+                              name: 'Surah ${widget.surahNumber}',
+                              englishName: widget.surahName ??
+                                  'Surah ${widget.surahNumber}',
+                              englishNameTranslation: '',
+                              revelationType: '',
+                              numberOfAyahs: 0,
+                            ),
+                          );
+                          return info.englishName;
+                        },
+                        loading: () =>
+                            widget.surahName ?? 'Surah ${widget.surahNumber}',
+                        error: (_, __) =>
+                            widget.surahName ?? 'Surah ${widget.surahNumber}',
                       ),
                     );
-                  }, // Close error builder
-                ), // Close surahDetailsAsync.when
-              ), // Close Expanded
-            ], // Close Column children
-          ),
+                  }
+
+                  // Subsequent indices are verse tiles (adjust index by -1)
+                  final verseIndex = index - 1;
+                  if (verseIndex < verses.length) {
+                    final Verse verse = verses[verseIndex];
+                    // Use the dedicated VerseTile widget
+                    return VerseTile(
+                      verse: verse,
+                      surahNumber: widget.surahNumber,
+                    );
+                  }
+                  return null; // Should not happen if itemCount is correct
+                },
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stackTrace) {
+              print(
+                'Error loading Surah ${widget.surahNumber} details UI: $error\n$stackTrace',
+              );
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Failed to load verses for Surah ${widget.surahNumber}.\nError: $error',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              );
+            }, // Close error builder
+          ), // Close surahDetailsAsync.when
         ],
       ),
     );

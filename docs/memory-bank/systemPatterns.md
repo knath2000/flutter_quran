@@ -53,6 +53,10 @@ Each feature follows a simplified clean architecture approach:
 ### Factory Pattern
 - Used for creating complex objects
 - Particularly for creating entities from JSON data
+### Caching Strategy (Hive)
+- Hive (backed by IndexedDB on web) is used for local caching.
+- **Verse Cache:** `QuranRepository` checks `quranVerseCache` (Box<List<Verse>>) before API calls. Fetched verses are stored using the Surah number as the key. Requires `VerseAdapter`.
+- **Introduction Cache:** `SurahDetailsNotifier` checks `surahIntroductionCache` (Box<String>) before Gemini API calls. Fetched introductions are stored using the Surah number as the key.
 
 ## State Management
 

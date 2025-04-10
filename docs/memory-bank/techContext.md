@@ -88,6 +88,8 @@
 - `flutter`: Flutter framework
 - `flutter_riverpod`: State management
 - `go_router`: Routing
+- `hive`: Local NoSQL Database
+- `hive_flutter`: Flutter helpers for Hive
 
 ### Firebase
 - `firebase_core`: Firebase core functionality
@@ -109,6 +111,8 @@
 
 ### Development/Build
 - `dmg: ^0.1.3`: For creating macOS DMG files (added as dev dependency)
+- `hive_generator`: Code generator for Hive TypeAdapters
+- `build_runner`: Code generation tool
 
 ### Web-Specific
 - Custom service worker for offline support
@@ -129,6 +133,7 @@
 - User actions trigger repository methods
 - Repository methods update Firestore
 - Firestore updates trigger UI updates
+- Hive used for local caching of verses and introductions to reduce API calls.
 
 ### Web Optimizations
 - Resource preloading (`<link rel="preload">` for fonts in `index.html`)

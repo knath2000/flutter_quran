@@ -1,4 +1,4 @@
-# Progress (as of commit 4f10a98)
+# Progress (as of commit cc8a5ed)
 
 ## What Works
 
@@ -25,6 +25,8 @@
 - ✅ Gemini API integration for Surah introductions functional.
 - ✅ State management refactored (`surahDetailsProvider`) to handle combined verse and introduction data.
 - ✅ API Key handling via `--dart-define` implemented for Vercel builds.
+- ✅ Hive caching implemented for Surah verses and introductions.
+- ✅ Hive `VerseAdapter` generated and registered.
 
 ### Web Platform
 - ✅ Vercel deployment setup functional.
@@ -43,7 +45,7 @@
 
 ## In Progress
 
-- **Gemini Introduction:** Introduction is fetched, but error handling and caching could be improved.
+- **Gemini Introduction:** Introduction is fetched and cached via Hive. Error handling could still be improved.
 - **Web Performance Optimization:** Initial optimizations applied (HTML renderer, deferred init, preconnect). FCP/SI improved. LCP now measurable but high (3.2s in Lighthouse). Main thread work still significant. Further investigation needed (LCP element, DevTools analysis).
 - **Accessibility:** Viewport issue (`user-scalable=no`) persists due to Flutter build behavior; fix requires non-standard workarounds.
 - **Core Feature Development:**
@@ -72,4 +74,4 @@
 - **Scrolling:** Potential scrolling issues in the `QuranReaderScreen` with large Surahs (pre-pagination state).
 - **API Data:** Transliteration availability/accuracy depends on the `alquran.cloud` API.
 
-*(Note: This progress reflects the state after initial performance optimizations up to commit `4f10a98`.)*
+*(Note: This progress reflects the state after implementing Hive caching up to commit `cc8a5ed`.)*
