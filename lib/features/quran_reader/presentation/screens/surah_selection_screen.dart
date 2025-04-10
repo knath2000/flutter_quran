@@ -23,7 +23,8 @@ class SurahSelectionScreen extends ConsumerWidget {
         actions: [
           // Points Display
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: EdgeInsets.only(
+                right: 8.0), // Cannot be const due to Theme access below
             child: Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -33,11 +34,12 @@ class SurahSelectionScreen extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.primary,
                     size: 20,
                   ),
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4), // Cannot be const due to ref.watch above
                   // Watch the simple points provider
                   Text(
                     ref.watch(userPointsProvider).toString(),
-                    style: const TextStyle(
+                    style: TextStyle(
+                      // Cannot be const due to ref.watch
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -48,7 +50,7 @@ class SurahSelectionScreen extends ConsumerWidget {
           ),
           // Streak Display
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: EdgeInsets.only(right: 8.0), // Cannot be const
             child: Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -58,12 +60,13 @@ class SurahSelectionScreen extends ConsumerWidget {
                     color: Colors.orangeAccent,
                     size: 20,
                   ), // Fire icon for streak
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4), // Cannot be const
                   Text(
                     ref
                         .watch(currentStreakProvider)
                         .toString(), // Watch streak provider
-                    style: const TextStyle(
+                    style: TextStyle(
+                      // Cannot be const
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -74,7 +77,7 @@ class SurahSelectionScreen extends ConsumerWidget {
           ),
           // Settings Button
           IconButton(
-            icon: const Icon(Icons.settings_outlined),
+            icon: Icon(Icons.settings_outlined), // Cannot be const
             tooltip: 'Settings',
             onPressed: () {
               context.push(AppRoutes.settings); // Use push to keep stack
@@ -82,7 +85,7 @@ class SurahSelectionScreen extends ConsumerWidget {
           ),
           // Badges Button
           IconButton(
-            icon: const Icon(Icons.emoji_events_outlined), // Example badge icon
+            icon: Icon(Icons.emoji_events_outlined), // Cannot be const
             tooltip: 'My Badges',
             onPressed: () {
               // Navigate to the badges screen
@@ -97,8 +100,8 @@ class SurahSelectionScreen extends ConsumerWidget {
           // Layer 1: Starry Background
           StarryBackground(
             starColor: Theme.of(context).colorScheme.primary.withOpacity(
-              0.7,
-            ), // Gold stars, slightly transparent
+                  0.7,
+                ), // Gold stars, slightly transparent
             numberOfStars: 100, // Adjust count as needed
           ),
           // Layer 2: Rive Animation (e.g., subtle background movement)
@@ -117,8 +120,8 @@ class SurahSelectionScreen extends ConsumerWidget {
               gradient: LinearGradient(
                 colors: [
                   Theme.of(context).primaryColor.withOpacity(
-                    0.6,
-                  ), // Semi-transparent gradient overlay
+                        0.6,
+                      ), // Semi-transparent gradient overlay
                   Theme.of(context).colorScheme.surface.withOpacity(0.85),
                 ],
                 begin: Alignment.topCenter,
@@ -130,12 +133,14 @@ class SurahSelectionScreen extends ConsumerWidget {
           surahListAsync.when(
             data: (surahs) {
               if (surahs.isEmpty) {
-                return const Center(
-                  child: Text(
+                return Center(
+                  // Can be const
+                  child: const Text(
                     'No Surahs found. Check API connection or response.',
-                    style: TextStyle(
+                    style: const TextStyle(
+                      // Can be const
                       color: Colors.white,
-                    ), // Ensure text is visible
+                    ),
                   ),
                 );
               }
@@ -154,31 +159,36 @@ class SurahSelectionScreen extends ConsumerWidget {
                       ); // Use path helper
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
+                      // Can be const
+                      padding: EdgeInsets.symmetric(
+                        // Can be const
                         vertical: 12.0,
                         horizontal: 16.0,
-                      ), // Add padding
+                      ),
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .center, // Center children horizontally
+                        crossAxisAlignment: CrossAxisAlignment
+                            .center, // Center children horizontally
                         children: [
                           Text(
                             '${surah.number}. ${surah.englishName}',
-                            style:
-                                Theme.of(
-                                  context,
-                                ).textTheme.titleLarge, // Larger title style
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleLarge, // Larger title style
                           ),
-                          const SizedBox(height: 4), // Spacing
+                          SizedBox(
+                              height:
+                                  4), // Cannot be const due to Theme access below
                           Text(
                             surah.name, // Arabic name
                             style: Theme.of(
                               context,
                             ).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface
-                                  .withOpacity(0.7), // Slightly dimmer color
-                            ),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(
+                                          0.7), // Slightly dimmer color
+                                ),
                           ),
                         ],
                       ),
@@ -187,17 +197,20 @@ class SurahSelectionScreen extends ConsumerWidget {
                 },
               );
             },
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => Center(
+                child: const CircularProgressIndicator()), // Can add const
             error: (error, stackTrace) {
               print('Error loading Surah list UI: $error\n$stackTrace');
               return Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  // Can be const
+                  padding: EdgeInsets.all(16.0), // Can be const
                   child: Text(
                     'Failed to load Surahs. Please check your connection.\nError: $error',
-                    style: const TextStyle(
+                    style: TextStyle(
+                      // Cannot be const due to error variable
                       color: Colors.white,
-                    ), // Ensure text is visible
+                    ),
                   ),
                 ),
               );
