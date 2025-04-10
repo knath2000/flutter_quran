@@ -1,38 +1,36 @@
 # Active Context
 
-## Current Focus (as of commit 99eb9ae)
+## Current Focus (as of commit c99fc38)
 
-The focus has shifted to optimizing the web application's performance based on Lighthouse reports, particularly addressing initial load time and Core Web Vitals like Largest Contentful Paint (LCP).
+The focus was on implementing the display of verse transliterations below the English translation in the Quran reader view, controlled by a user setting.
 
-## Recent Changes (leading up to commit 99eb9ae)
+## Recent Changes (leading up to commit c99fc38)
 
-*   **Performance Analysis:** Reviewed Lighthouse and Chrome DevTools Performance reports for the Vercel deployment (`https://onlyquran420.vercel.app/`). Identified bottlenecks: LCP measurement error (NO_LCP), large initial JS bundle (`main.dart.js`), high JS execution time, and large asset downloads (Google CDN, fonts).
-*   **Configuration Fixes:**
-    *   Corrected `web/robots.txt` to allow crawlers. (Commit: `ee0e64e`)
-    *   Added `lang="en"` attribute to `<html>` tag in `web/index.html`. (Commit: `ee0e64e`)
-    *   Attempted to fix viewport accessibility (`user-scalable=no`) by modifying `web/index.html`, but the issue persists in Lighthouse reports, likely due to Flutter build overrides. (Commit: `ee0e64e`)
-*   **Deferred Loading:** Implemented deferred loading (`deferred as` + `FutureBuilder`) for `QuranReaderScreen`, `SettingsScreen`, and `BadgesScreen` in `lib/features/navigation/app_router.dart` to potentially improve post-initial-load navigation. (Commit: `ee0e64e`)
-*   **Font Preloading:** Added `<link rel="preload">` tags for primary web fonts in `web/index.html` to encourage earlier downloads. (Commit: `ee0e64e`)
-*   **Renderer Testing:**
-    *   Tested building with the HTML renderer by adding configuration to `web/index.html`. (Commit: `a274166`)
-    *   Tested simplifying the initial route to isolate LCP issues. (Commit: `1fae73c`)
-    *   Reverted initial route simplification. (Commit: `6041994`)
-    *   Reverted HTML renderer configuration as it didn't resolve the LCP measurement error. (Commit: `99eb9ae`)
+*   **Transliteration Feature Implementation:**
+    *   Updated `QuranApiDataSource` to fetch the `en.transliteration` edition from the `alquran.cloud` API alongside existing editions (Arabic, translation, audio).
+    *   Confirmed `Verse` model already supported an optional `transliterationText` field and `fromJson` override.
+    *   Confirmed `SharedPreferencesService` already had methods to get/set the `showTransliteration` preference.
+    *   Confirmed `settings_providers.dart` already had a `showTransliterationProvider` (StateProvider) linked to SharedPreferences.
+    *   Updated `VerseTile` widget to watch `showTransliterationProvider` and conditionally display the `verse.transliterationText` based on the provider's state.
+    *   Confirmed `SettingsScreen` already had a `SwitchListTile` to control the `showTransliterationProvider`.
+*   **(Previous) Web Performance Optimization:** Addressed Lighthouse issues, implemented deferred loading, font preloading, and tested web renderers. SEO/Best Practices improved, but LCP measurement issues persist. (Commits: `ee0e64e` to `99eb9ae`)
 
 ## Active Decisions
 
-*   **Renderer:** Reverted to Flutter's default web renderer selection (likely CanvasKit for desktop) after testing showed the HTML renderer didn't resolve the LCP measurement issue in Lighthouse.
-*   **Optimization Strategy:** Focused on configuration fixes, deferred loading for secondary routes, and font preloading. Further LCP optimization might require deeper investigation into Flutter Web's initial rendering or alternative approaches.
+*   **Transliteration Source:** Using the `en.transliteration` edition from `alquran.cloud`.
+*   **Transliteration Display:** Displayed below the English translation in `VerseTile`.
+*   **Transliteration Control:** Visibility is controlled by a user setting (`showTransliterationProvider`), accessible via a switch in the `SettingsScreen`. Default is `true`.
+*   **Missing Data Handling:** If transliteration text is null or empty (either from API or setting is off), nothing is displayed (no placeholder).
 
 ## Next Steps
 
-1.  **Monitor Performance:** Observe the real-world performance and loading experience, despite the LCP measurement issue in Lighthouse.
-2.  **Investigate Viewport Issue:** Research how to correctly configure the viewport in Flutter Web builds to allow user scaling and pass the accessibility check.
-3.  **Further Bundle Size Reduction:** If initial load remains slow, investigate more aggressive code splitting or alternative asset loading strategies.
-4.  **Continue Core Feature Development:** Resume work on core application features as planned.
+1.  **Test Transliteration Feature:** Thoroughly test the display of transliterations, the settings toggle, persistence, and handling of potentially missing data across different platforms (Web, macOS, iOS).
+2.  **Update Memory Bank:** Complete the documentation update for this feature in `progress.md`, `techContext.md`, and `systemPatterns.md`.
+3.  **Address Known Issues:** Revisit persistent issues like LCP measurement, viewport accessibility, and potentially large bundle size.
+4.  **Continue Core Feature Development:** Resume work on other planned features (e.g., pagination, audio improvements).
 
 ## Current Considerations
 
-1.  **LCP Measurement:** Acknowledging the difficulty in getting an accurate LCP score from Lighthouse for this Flutter Web app. Focus might shift to other metrics (FCP, SI, TTI if measurable) and user-perceived performance.
-2.  **Accessibility:** The persistent `user-scalable=no` issue needs resolution.
-3.  **CanvasKit vs HTML:** While reverted for now, the HTML renderer remains an option if specific performance characteristics or compatibility issues arise with CanvasKit.
+1.  **API Reliability:** Monitor the `alquran.cloud` API for consistent availability of the `en.transliteration` edition.
+2.  **Transliteration Accuracy:** The quality/standard of the provided transliteration depends on the API source.
+3.  **UI Layout:** Ensure the added transliteration text fits well within the `VerseTile` layout across different font sizes and screen widths.

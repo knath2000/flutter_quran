@@ -5,6 +5,7 @@ class SurahInfo {
   final String englishNameTranslation;
   final String revelationType; // 'Meccan' or 'Medinan'
   final int numberOfAyahs;
+  final String? introduction; // Optional field for Surah summary/background
 
   SurahInfo({
     required this.number,
@@ -13,6 +14,7 @@ class SurahInfo {
     required this.englishNameTranslation,
     required this.revelationType,
     required this.numberOfAyahs,
+    this.introduction, // Add to constructor
   });
 
   // Factory constructor to create a SurahInfo instance from JSON
@@ -25,6 +27,8 @@ class SurahInfo {
       englishNameTranslation: json['englishNameTranslation'] as String? ?? '',
       revelationType: json['revelationType'] as String? ?? '',
       numberOfAyahs: json['numberOfAyahs'] as int? ?? 0,
+      // Assuming API might provide 'introduction' or similar key in the future
+      introduction: json['introduction'] as String?,
     );
   }
 

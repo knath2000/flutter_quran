@@ -1,13 +1,23 @@
-# Progress (as of commit 99eb9ae)
+# Progress (as of commit c99fc38)
 
 ## What Works
 
 ### Core Functionality
 - ✅ Basic Surah selection screen (`SurahSelectionScreen`).
-- ✅ Basic Quran reader screen (`QuranReaderScreen`) displaying verses from local JSON.
-- ✅ Loading Quran text data from `assets/data/quran_arabic_text.json`.
+- ✅ Basic Quran reader screen (`QuranReaderScreen`) displaying verses from local JSON (Web/macOS) or API (Other).
+- ✅ Loading Quran text data from `assets/data/quran_arabic_text.json` (Web/macOS).
+- ✅ Fetching verse details (Arabic, Translation, Audio, Transliteration) from `alquran.cloud` API.
+- ✅ Displaying Arabic text, English Translation, and English Transliteration in `VerseTile`.
 - ✅ Basic UI structure and navigation using GoRouter.
 - ✅ Basic theme setup (`AppTheme`).
+- ✅ Basic audio playback controls (play/pause/seek) per verse.
+- ✅ Settings screen with functional toggles/options:
+    - ✅ Font Size adjustment.
+    - ✅ Show/Hide Translation toggle.
+    - ✅ Show/Hide Transliteration toggle (Default: On).
+    - ✅ Autoplay Verses toggle.
+    - ✅ Reciter selection dropdown.
+- ✅ Settings persistence using `SharedPreferences`.
 
 ### Web Platform
 - ✅ Vercel deployment setup functional.
@@ -23,16 +33,15 @@
 
 - **Web Performance Optimization:** Ongoing efforts to improve initial load time and address Core Web Vitals. LCP measurement remains problematic.
 - **Accessibility:** Investigating how to fix the persistent `user-scalable=no` viewport issue flagged by Lighthouse.
-- **Core Feature Development:** (Paused during performance optimization)
+- **Core Feature Development:** (Resuming after transliteration feature)
     - Quran Reader UI enhancements.
     - State Management refinement (Riverpod).
 
 ## What's Left to Build (Major items from original plan)
 
 - **Pagination:** Implementing verse pagination in the reader screen.
-- **Audio Playback:** Adding audio playback functionality for verses.
+- **Audio Playback:** Enhancements (e.g., continuous play, playlist management).
 - **User Progress/Gamification:** Features like tracking reading progress, badges, etc.
-- **Settings:** Implementing user-configurable settings.
 - **Data Persistence:** Moving beyond local JSON if needed (e.g., user data).
 - **Authentication:** Adding user authentication.
 - **Advanced Features:** Search, bookmarks, notes, etc.
@@ -41,11 +50,12 @@
 
 ## Known Issues
 
-- **Lighthouse LCP Error:** Lighthouse consistently fails to measure Largest Contentful Paint ("NO_LCP") for the Flutter Web build (both CanvasKit and HTML renderers tested). This seems related to Flutter's initialization/rendering process and the large initial JS bundle.
-- **Large Initial Bundle:** `main.dart.js` remains large (~2.7MB-4MB depending on build), contributing to significant initial load and JS execution time.
-- **Accessibility Viewport:** Lighthouse flags `user-scalable="no"` in the viewport meta tag, preventing zooming. Attempts to fix via `index.html` were overridden by the Flutter build process.
-- **Deprecated API:** Lighthouse flags usage of deprecated `IntlV8BreakIterator` (likely from a dependency).
-- **Missing Source Maps:** Lighthouse flags missing source maps, despite building with `--source-maps`. (Needs verification if maps are correctly deployed/accessible).
-- **Scrolling:** Potential scrolling issues in the `QuranReaderScreen` if the number of verses is large (pre-pagination state).
+- **Lighthouse LCP Error:** Lighthouse consistently fails to measure Largest Contentful Paint ("NO_LCP") for the Flutter Web build.
+- **Large Initial Bundle:** `main.dart.js` remains large, impacting initial web load time.
+- **Accessibility Viewport:** Lighthouse flags `user-scalable="no"` in the viewport meta tag.
+- **Deprecated API:** Lighthouse flags usage of deprecated `IntlV8BreakIterator`.
+- **Missing Source Maps:** Lighthouse flags missing source maps (needs verification).
+- **Scrolling:** Potential scrolling issues in the `QuranReaderScreen` with large Surahs (pre-pagination state).
+- **API Data:** Transliteration availability/accuracy depends on the `alquran.cloud` API.
 
-*(Note: This progress reflects the state after attempting web performance optimizations up to commit `99eb9ae`.)*
+*(Note: This progress reflects the state after implementing the transliteration feature up to commit `c99fc38`.)*

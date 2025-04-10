@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quran_flutter/core/audio/audio_player_service.dart';
 import 'package:quran_flutter/core/audio/audio_playback_notifier.dart'; // Import playback state
 import 'package:quran_flutter/core/audio/playback_state.dart'; // Import playback status enum
+import 'package:quran_flutter/core/models/surah_info.dart'; // Import SurahInfo
 import 'package:quran_flutter/core/models/verse.dart';
 import 'package:quran_flutter/features/quran_reader/application/providers/surah_details_provider.dart';
+import 'package:quran_flutter/features/quran_reader/application/providers/surah_list_provider.dart'; // Import SurahList provider
+import 'package:quran_flutter/features/quran_reader/presentation/widgets/surah_introduction_card.dart'; // Import new widget
 import 'package:quran_flutter/features/quran_reader/presentation/widgets/verse_tile.dart';
 import 'package:quran_flutter/features/settings/application/settings_providers.dart';
 import 'package:quran_flutter/shared/widgets/starry_background.dart';
@@ -52,6 +55,7 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
     final playbackState = ref.watch(
       audioPlaybackStateProvider,
     ); // Watch playback state
+    final surahListAsync = ref.watch(surahListProvider); // Watch surah list
 
     return Scaffold(
       appBar: AppBar(
@@ -97,49 +101,95 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
               ),
             ),
           ),
-          // Use the AsyncValue directly from the StateNotifierProvider
-          surahDetailsAsync.when(
-            data: (verses) {
-              if (verses.isEmpty) {
-                return const Center(
-                  child: Text(
-                    'No verses found for this Surah.',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                );
-              }
-              // Data prep for autoplay removed (handled by service)
-
-              // Display verses in a list
-              return ListView.builder(
-                padding: const EdgeInsets.all(8.0),
-                itemCount: verses.length, // Use direct length
-                itemBuilder: (context, index) {
-                  final Verse verse = verses[index];
-                  // Use the dedicated VerseTile widget
-                  return VerseTile(
-                    verse: verse,
-                    surahNumber: widget.surahNumber,
-                    // Parameters removed in previous step
+          Column(
+            // Wrap content in a Column
+            children: [
+              // Display Surah Introduction Card (using placeholder)
+              surahListAsync.when(
+                data: (surahList) {
+                  final currentSurahInfo = surahList.firstWhere(
+                    (s) => s.number == widget.surahNumber,
+                    orElse:
+                        () => SurahInfo(
+                          // Basic fallback if not found
+                          number: widget.surahNumber,
+                          name: 'Surah ${widget.surahNumber}',
+                          englishName:
+                              widget.surahName ?? 'Surah ${widget.surahNumber}',
+                          englishNameTranslation: '',
+                          revelationType: '',
+                          numberOfAyahs: 0,
+                        ),
                   );
+                  // Create a copy with placeholder - actual data fetch planned later
+                  final infoWithPlaceholder = SurahInfo(
+                    number: currentSurahInfo.number,
+                    name: currentSurahInfo.name,
+                    englishName: currentSurahInfo.englishName,
+                    englishNameTranslation:
+                        currentSurahInfo.englishNameTranslation,
+                    revelationType: currentSurahInfo.revelationType,
+                    numberOfAyahs: currentSurahInfo.numberOfAyahs,
+                    introduction: null, // Let the card handle placeholder logic
+                  );
+                  return SurahIntroductionCard(surahInfo: infoWithPlaceholder);
                 },
-              );
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stackTrace) {
-              print(
-                'Error loading Surah ${widget.surahNumber} details UI: $error\n$stackTrace',
-              );
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'Failed to load verses for Surah ${widget.surahNumber}.\nError: $error',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              );
-            },
+                loading:
+                    () =>
+                        const SizedBox.shrink(), // Don't show anything while list loads
+                error:
+                    (e, st) =>
+                        const SizedBox.shrink(), // Don't show card on error
+              ),
+
+              // Existing Verse List (Expanded to fill remaining space)
+              Expanded(
+                child: surahDetailsAsync.when(
+                  data: (verses) {
+                    if (verses.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'No verses found for this Surah.',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }
+                    // Data prep for autoplay removed (handled by service)
+
+                    // Display verses in a list
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(8.0),
+                      itemCount: verses.length, // Use direct length
+                      itemBuilder: (context, index) {
+                        final Verse verse = verses[index];
+                        // Use the dedicated VerseTile widget
+                        return VerseTile(
+                          verse: verse,
+                          surahNumber: widget.surahNumber,
+                          // Parameters removed in previous step
+                        );
+                      },
+                    );
+                  },
+                  loading:
+                      () => const Center(child: CircularProgressIndicator()),
+                  error: (error, stackTrace) {
+                    print(
+                      'Error loading Surah ${widget.surahNumber} details UI: $error\n$stackTrace',
+                    );
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'Failed to load verses for Surah ${widget.surahNumber}.\nError: $error',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    );
+                  }, // Close error builder
+                ), // Close surahDetailsAsync.when
+              ), // Close Expanded
+            ], // Close Column children
           ),
         ],
       ),
