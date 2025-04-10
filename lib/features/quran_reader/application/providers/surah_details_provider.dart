@@ -1,7 +1,13 @@
-import 'dart:async'; // For Completer
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quran_flutter/core/models/verse.dart';
 import 'package:quran_flutter/features/quran_reader/data/repositories/quran_repository.dart';
+import 'package:quran_flutter/core/services/gemini_surah_service.dart'; // Import the service
+
+// Define the provider for GeminiSurahService
+final geminiSurahServiceProvider = Provider<GeminiSurahService>((ref) {
+  return GeminiSurahService();
+});
 
 // StateNotifier for managing Surah details fetching and caching
 class SurahDetailsNotifier extends StateNotifier<AsyncValue<List<Verse>>> {
@@ -36,19 +42,30 @@ class SurahDetailsNotifier extends StateNotifier<AsyncValue<List<Verse>>> {
     try {
       final repository = _ref.read(quranRepositoryProvider);
       final verses = await repository.getSurahDetails(surahNumber);
-      // Optional: Sort verses if needed
-      // verses.sort((a, b) => a.numberInSurah.compareTo(b.numberInSurah));
 
+      // Generate introductions using Gemini
+      final geminiService = _ref.read(
+        geminiSurahServiceProvider,
+      ); // Use _ref and ensure provider is defined
+      for (var verse in verses) {
+        verse.introduction = await geminiService.generateSurahIntroduction(
+          surahNumber,
+        ); // Add or update introduction field
+      }
+
+      // Removed duplicate block
       _cachedVerses = verses; // Store in cache
       state = AsyncValue.data(verses); // Set data state
-      print('Successfully fetched and cached Surah $surahNumber');
+      print(
+        'Successfully fetched, cached Surah $surahNumber, and generated introductions',
+      );
 
       _fetchCompleter!.complete(); // Mark fetch as complete
     } catch (e, stackTrace) {
-      print('Error fetching Surah details for $surahNumber in notifier: $e');
-      state = AsyncValue.error(e, stackTrace); // Set error state
-      _cachedVerses = null; // Clear cache on error
-      _fetchCompleter!.completeError(e, stackTrace); // Complete with error
+      print('Error in Surah details for $surahNumber: $e');
+      state = AsyncValue.error(e, stackTrace);
+      _cachedVerses = null;
+      _fetchCompleter!.completeError(e, stackTrace);
     }
   }
 
