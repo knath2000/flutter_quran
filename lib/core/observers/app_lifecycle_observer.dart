@@ -7,6 +7,7 @@ import 'package:quran_flutter/features/settings/application/settings_providers.d
 import 'package:quran_flutter/features/quran_reader/application/providers/surah_details_provider.dart';
 import 'package:quran_flutter/core/audio/audio_player_service.dart';
 import 'dart:async'; // For Future.microtask
+import 'package:quran_flutter/core/models/verse.dart'; // Import Verse model
 
 /// A widget that observes application-level state changes without building UI.
 /// Used here to listen for audio completion and trigger game logic / autoplay.
@@ -94,7 +95,16 @@ class _AppLifecycleObserverState extends ConsumerState<AppLifecycleObserver> {
           final surahDetailsNotifier = ref.read(
             surahDetailsProvider(completedVerseId.surahNumber).notifier,
           );
-          final cachedVerses = surahDetailsNotifier.getCachedSurah();
+          // Read the current state which is AsyncValue<(List<Verse>, String)>
+          final currentState = ref.read(
+            surahDetailsProvider(completedVerseId.surahNumber),
+          );
+          List<Verse>? cachedVerses;
+          if (currentState is AsyncData<(List<Verse>, String)>) {
+            cachedVerses =
+                currentState.value.$1; // Access verses from the record
+          }
+          // final cachedVerses = surahDetailsNotifier.getCachedSurah(); // Old method removed
 
           if (cachedVerses != null) {
             final totalVerses = cachedVerses.length;

@@ -59,9 +59,13 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
     final surahListAsync = ref.watch(
       surahListProvider,
     ); // Still needed for name
-    final introductionAsync = ref.watch(
-      surahIntroductionProvider(widget.surahNumber),
-    ); // Watch new provider
+    // Derive introduction AsyncValue from the main details provider
+    // Derive introduction AsyncValue from the main details provider
+    final AsyncValue<String?> introductionAsyncValue = surahDetailsAsync.when(
+      data: (data) => AsyncValue<String?>.data(data.$2), // Explicitly type data
+      loading: () => const AsyncValue.loading(),
+      error: (e, st) => AsyncValue.error(e, st),
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.surahName ?? 'Surah ${widget.surahNumber}'),
@@ -112,7 +116,7 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
               // Display Surah Introduction Card (using placeholder)
               // Pass introduction AsyncValue and Surah name to the card
               SurahIntroductionCard(
-                introductionAsync: introductionAsync,
+                introductionAsync: introductionAsyncValue, // Pass derived value
                 // Get surah name from list provider or fallback
                 surahName: surahListAsync.when(
                   data: (list) {
@@ -148,7 +152,12 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
               // Existing Verse List (Expanded to fill remaining space)
               Expanded(
                 child: surahDetailsAsync.when(
-                  data: (verses) {
+                  // Accept the record as 'data'
+                  data: (data) {
+                    // Access verses using data.$1
+                    final verses = data.$1;
+                    // Access introduction using data.$2 (if needed here)
+                    // final introduction = data.$2;
                     if (verses.isEmpty) {
                       return const Center(
                         child: Text(
@@ -162,7 +171,7 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
                     // Display verses in a list
                     return ListView.builder(
                       padding: const EdgeInsets.all(8.0),
-                      itemCount: verses.length, // Use direct length
+                      itemCount: verses.length,
                       itemBuilder: (context, index) {
                         final Verse verse = verses[index];
                         // Use the dedicated VerseTile widget

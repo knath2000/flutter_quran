@@ -10,12 +10,16 @@ final geminiSurahServiceProvider = Provider<GeminiSurahService>((ref) {
 });
 
 // StateNotifier for managing Surah details fetching and caching
-class SurahDetailsNotifier extends StateNotifier<AsyncValue<List<Verse>>> {
+// Define the combined state type using a record
+typedef SurahDetailsState = AsyncValue<(List<Verse>, String)>;
+
+class SurahDetailsNotifier extends StateNotifier<SurahDetailsState> {
   final Ref _ref; // Keep ref to read other providers
   final int surahNumber; // Store the surah number this notifier is for
 
   // Cache for the fetched verses
-  List<Verse>? _cachedVerses;
+  // Cache for the combined state (optional, state itself holds the data)
+  // (List<Verse>, String)? _cachedDetails;
   // Prevent concurrent fetches
   Completer<void>? _fetchCompleter;
 
@@ -31,7 +35,8 @@ class SurahDetailsNotifier extends StateNotifier<AsyncValue<List<Verse>>> {
       return _fetchCompleter!.future;
     }
     // If already loaded successfully, do nothing
-    if (state is AsyncData && _cachedVerses != null) {
+    // Check if state is already loaded data
+    if (state is AsyncData<(List<Verse>, String)>) {
       return;
     }
 
@@ -41,63 +46,54 @@ class SurahDetailsNotifier extends StateNotifier<AsyncValue<List<Verse>>> {
 
     try {
       final repository = _ref.read(quranRepositoryProvider);
+      // Fetch verses and introduction concurrently or sequentially
       final verses = await repository.getSurahDetails(surahNumber);
 
-      // Fetch verses first
-      _cachedVerses =
-          verses; // Store verses in cache before potentially failing on Gemini call
-
-      // Generate Surah introduction using Gemini (call once)
+      String introduction = 'Introduction not available.'; // Default value
       try {
         final geminiService = _ref.read(geminiSurahServiceProvider);
-        final introduction = await geminiService.generateSurahIntroduction(
+        introduction = await geminiService.generateSurahIntroduction(
           surahNumber,
         );
         print('Generated Introduction for Surah $surahNumber: $introduction');
-        // TODO: Store introduction appropriately (e.g., in a separate provider or update state structure)
       } catch (geminiError) {
         print(
           'Error generating introduction for Surah $surahNumber: $geminiError',
         );
-        // Decide how to handle Gemini errors - maybe proceed without intro?
+        // Use the default introduction string on error
       }
 
-      // Removed duplicate block
-      // Set state only after fetching verses, regardless of Gemini success/failure for now
-      state = AsyncValue.data(verses);
-      print('Successfully fetched and cached Surah $surahNumber verses.');
+      // Set the combined state
+      state = AsyncValue.data((verses, introduction));
+      print('Successfully fetched Surah $surahNumber verses and introduction.');
 
       _fetchCompleter!.complete(); // Mark fetch as complete
     } catch (e, stackTrace) {
-      print('Error in Surah details for $surahNumber: $e');
-      state = AsyncValue.error(e, stackTrace);
-      _cachedVerses = null;
+      print('Error fetching Surah details for $surahNumber: $e');
+      state = AsyncValue.error(
+        e,
+        stackTrace,
+      ); // Set error state for the combined type
+      // _cachedDetails = null; // Clear cache if using one
       _fetchCompleter!.completeError(e, stackTrace);
     }
   }
 
-  // Method to get cached data if available for the correct surah
-  List<Verse>? getCachedSurah() {
-    // Ensure the current state is data before returning cache
-    if (state is AsyncData<List<Verse>>) {
-      return _cachedVerses;
-    }
-    return null;
-  }
+  // Removed getCachedSurah as state now holds combined data
 
   // Optional: Method to force refresh
   Future<void> refresh() async {
-    _cachedVerses = null; // Clear cache
+    // _cachedDetails = null; // Clear cache if using one
     _fetchCompleter = null; // Allow new fetch
     await fetchSurah();
   }
 }
 
 // StateNotifierProvider.family to create instances based on surahNumber
-final surahDetailsProvider = StateNotifierProvider.family<
-  SurahDetailsNotifier,
-  AsyncValue<List<Verse>>,
-  int
->((ref, surahNumber) {
-  return SurahDetailsNotifier(ref, surahNumber);
-});
+final surahDetailsProvider =
+    StateNotifierProvider.family<SurahDetailsNotifier, SurahDetailsState, int>((
+      ref,
+      surahNumber,
+    ) {
+      return SurahDetailsNotifier(ref, surahNumber);
+    });
