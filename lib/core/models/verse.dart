@@ -1,5 +1,5 @@
 class Verse {
-  String? introduction; // Add field for Gemini-generated introduction
+  // Removed introduction field
   final int numberInSurah;
   final String text; // Arabic text
   final String? audioUrl; // URL for verse audio
@@ -17,7 +17,7 @@ class Verse {
     this.audioUrl,
     this.translationText,
     this.transliterationText,
-    this.introduction, // Include in constructor
+    // Removed introduction from constructor
     required this.juz,
     required this.manzil,
     required this.page,
@@ -35,7 +35,7 @@ class Verse {
     translationTextOverride, // Allow passing translation if fetched separately
     String?
     transliterationTextOverride, // Allow passing transliteration if fetched separately
-    String? introductionOverride, // Add parameter for introduction
+    // Removed introductionOverride parameter
   }) {
     // Example mapping (adjust keys based on the actual API response structure, e.g., alquran.cloud)
     return Verse(
@@ -50,9 +50,7 @@ class Verse {
       transliterationText:
           transliterationTextOverride ??
           json['transliteration'] as String?, // Example key
-      introduction:
-          introductionOverride ??
-          json['introduction'] as String?, // Allow from JSON or override
+      // Removed introduction assignment from factory
       juz: json['juz'] as int? ?? 0,
       manzil: json['manzil'] as int? ?? 0,
       page: json['page'] as int? ?? 0,

@@ -43,22 +43,29 @@ class SurahDetailsNotifier extends StateNotifier<AsyncValue<List<Verse>>> {
       final repository = _ref.read(quranRepositoryProvider);
       final verses = await repository.getSurahDetails(surahNumber);
 
-      // Generate introductions using Gemini
-      final geminiService = _ref.read(
-        geminiSurahServiceProvider,
-      ); // Use _ref and ensure provider is defined
-      for (var verse in verses) {
-        verse.introduction = await geminiService.generateSurahIntroduction(
+      // Fetch verses first
+      _cachedVerses =
+          verses; // Store verses in cache before potentially failing on Gemini call
+
+      // Generate Surah introduction using Gemini (call once)
+      try {
+        final geminiService = _ref.read(geminiSurahServiceProvider);
+        final introduction = await geminiService.generateSurahIntroduction(
           surahNumber,
-        ); // Add or update introduction field
+        );
+        print('Generated Introduction for Surah $surahNumber: $introduction');
+        // TODO: Store introduction appropriately (e.g., in a separate provider or update state structure)
+      } catch (geminiError) {
+        print(
+          'Error generating introduction for Surah $surahNumber: $geminiError',
+        );
+        // Decide how to handle Gemini errors - maybe proceed without intro?
       }
 
       // Removed duplicate block
-      _cachedVerses = verses; // Store in cache
-      state = AsyncValue.data(verses); // Set data state
-      print(
-        'Successfully fetched, cached Surah $surahNumber, and generated introductions',
-      );
+      // Set state only after fetching verses, regardless of Gemini success/failure for now
+      state = AsyncValue.data(verses);
+      print('Successfully fetched and cached Surah $surahNumber verses.');
 
       _fetchCompleter!.complete(); // Mark fetch as complete
     } catch (e, stackTrace) {
