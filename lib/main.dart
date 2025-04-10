@@ -6,6 +6,7 @@ import 'package:quran_flutter/features/navigation/app_router.dart';
 import 'package:quran_flutter/shared/theme/app_theme.dart';
 import 'package:quran_flutter/core/services/shared_preferences_service.dart';
 import 'package:quran_flutter/core/models/user_progress.dart';
+import 'package:quran_flutter/core/models/verse.dart'; // Import Verse for adapter/box typing
 import 'package:quran_flutter/core/observers/app_lifecycle_observer.dart';
 import 'package:quran_flutter/core/providers/data_providers.dart'; // Import data providers
 import 'package:flutter/foundation.dart' show kIsWeb; // For platform check
@@ -14,8 +15,17 @@ import 'dart:io' show Platform; // For platform check
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+  // Register adapters
   Hive.registerAdapter(UserProgressAdapter());
+  // TODO: Ensure VerseAdapter is generated and registered here
+  // Hive.registerAdapter(VerseAdapter()); // Assuming adapter exists/will be generated
+
+  // Open boxes
   await Hive.openBox<UserProgress>('userProgressBox');
+  await Hive.openBox<List<dynamic>>(
+      'quranVerseCache'); // Store list of verses (dynamic for now if adapter not ready)
+  await Hive.openBox<String>(
+      'surahIntroductionCache'); // Store introduction strings
   final prefs = await SharedPreferences.getInstance();
 
   // Create the ProviderContainer manually

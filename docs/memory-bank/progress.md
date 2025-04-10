@@ -1,4 +1,4 @@
-# Progress (as of commit 8e47d5c)
+# Progress (as of commit 4f10a98)
 
 ## What Works
 
@@ -35,12 +35,17 @@
 - ✅ `index.html` includes `lang="en"` attribute.
 - ✅ Lighthouse SEO score: 100.
 - ✅ Lighthouse Best Practices score: 100.
+- ✅ Switched to HTML web renderer (`--web-renderer html`).
+- ✅ Deferred Quran JSON data initialization in `main.dart`.
+- ✅ Added preconnect links for fonts/API to `web/index.html`.
+- ✅ Enabled source maps for web release builds (`--source-maps`).
+- ✅ Fixed Vercel build issues related to Flutter SDK version and dependencies.
 
 ## In Progress
 
 - **Gemini Introduction:** Introduction is fetched, but error handling and caching could be improved.
-- **Web Performance Optimization:** Ongoing efforts to improve initial load time and address Core Web Vitals. LCP measurement remains problematic.
-- **Accessibility:** Investigating how to fix the persistent `user-scalable=no` viewport issue flagged by Lighthouse.
+- **Web Performance Optimization:** Initial optimizations applied (HTML renderer, deferred init, preconnect). FCP/SI improved. LCP now measurable but high (3.2s in Lighthouse). Main thread work still significant. Further investigation needed (LCP element, DevTools analysis).
+- **Accessibility:** Viewport issue (`user-scalable=no`) persists due to Flutter build behavior; fix requires non-standard workarounds.
 - **Core Feature Development:**
     - Quran Reader UI enhancements.
     - State Management refinement (Riverpod).
@@ -59,12 +64,12 @@
 ## Known Issues
 
 - **Gemini Error Handling:** Basic error handling for Gemini calls exists (prints to console, uses default text), but could be more user-facing.
-- **Lighthouse LCP Error:** Lighthouse consistently fails to measure Largest Contentful Paint ("NO_LCP") for the Flutter Web build.
-- **Large Initial Bundle:** `main.dart.js` remains large, impacting initial web load time.
-- **Accessibility Viewport:** Lighthouse flags `user-scalable="no"` in the viewport meta tag.
-- **Deprecated API:** Lighthouse flags usage of deprecated `IntlV8BreakIterator`.
-- **Missing Source Maps:** Lighthouse flags missing source maps (needs verification).
+- **Lighthouse LCP:** LCP is now measured but high (3.2s in Lighthouse simulation). Specific LCP element needs identification for targeted optimization.
+- **JS Bundle Size:** Reduced by using HTML renderer, but overall JS execution time and main thread work remain high. Further reduction likely needs advanced analysis/code splitting.
+- **Accessibility Viewport:** Lighthouse flags `user-scalable="no"` (Injected by Flutter build).
+- **Deprecated API:** Lighthouse flags usage of a deprecated API (Specific API hard to identify).
+// - **Missing Source Maps:** Source maps are now enabled in the build script.
 - **Scrolling:** Potential scrolling issues in the `QuranReaderScreen` with large Surahs (pre-pagination state).
 - **API Data:** Transliteration availability/accuracy depends on the `alquran.cloud` API.
 
-*(Note: This progress reflects the state after implementing Gemini API integration for Surah introductions up to commit `8e47d5c`.)*
+*(Note: This progress reflects the state after initial performance optimizations up to commit `4f10a98`.)*

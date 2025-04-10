@@ -84,10 +84,11 @@ Each feature follows a simplified clean architecture approach:
 ## Web Optimization Patterns
 
 ### Resource Loading Strategy
-- **Preloading**: Critical resources are preloaded
-- **Preconnecting**: Early connection to required origins
-- **Deferred Loading**: Non-critical scripts use `defer` attribute
-- **Async Loading**: Scripts that don't block rendering use `async`
+- **Preloading**: Fonts preloaded via `<link rel="preload">` in `index.html`.
+- **Preconnecting**: Connections to font/API origins established early via `<link rel="preconnect">` in `index.html`.
+- **Deferred Loading (Code Splitting)**: Major routes (`QuranReaderScreen`, `SettingsScreen`, `BadgesScreen`) loaded using `deferred as` and `loadLibrary()`.
+- **Deferred Loading (Initialization)**: Quran JSON data source initialization deferred (removed blocking `await` from `main.dart`) to improve FCP.
+- **Async Loading**: `flutter_bootstrap.js` uses `async`.
 
 ### Service Worker Caching Strategies
 - **Cache-First**: Static assets (images, fonts, etc.)

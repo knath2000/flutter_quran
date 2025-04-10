@@ -47,6 +47,8 @@
 - Environment-specific configurations
 - Web-specific configurations in `web/index.html` and `web/manifest.json`
 - API Key for Gemini passed via `--dart-define=GEMINI_API_KEY=$GEMINI_API_KEY` in `build.sh` for Vercel builds.
+- Web renderer set to HTML (`--web-renderer html`) in `build.sh` for smaller initial load.
+- Source maps enabled (`--source-maps`) in `build.sh` for release builds.
 
 ## Technical Constraints
 
@@ -129,8 +131,10 @@
 - Firestore updates trigger UI updates
 
 ### Web Optimizations
-- Resource preloading and preconnecting
+- Resource preloading (`<link rel="preload">` for fonts in `index.html`)
+- Preconnecting (`<link rel="preconnect">` for fonts and API endpoints in `index.html`)
 - Deferred script loading
 - Service worker caching strategies
 - Performance monitoring and tracking
 - Offline fallback UI
+- Deferred initialization of Quran JSON data (removed blocking `await` in `main.dart`).

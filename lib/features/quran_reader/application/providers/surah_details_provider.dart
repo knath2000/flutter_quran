@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart'; // Import Hive
 import 'package:quran_flutter/core/models/verse.dart';
 import 'package:quran_flutter/features/quran_reader/data/repositories/quran_repository.dart';
-import 'package:quran_flutter/core/services/gemini_surah_service.dart'; // Import the service
+import 'package:quran_flutter/core/services/gemini_surah_service.dart';
 
 // Define the provider for GeminiSurahService
 final geminiSurahServiceProvider = Provider<GeminiSurahService>((ref) {
@@ -23,8 +24,13 @@ class SurahDetailsNotifier extends StateNotifier<SurahDetailsState> {
   // Prevent concurrent fetches
   Completer<void>? _fetchCompleter;
 
+  final Box<String> _introCacheBox; // Add intro cache box
+
   SurahDetailsNotifier(this._ref, this.surahNumber)
-    : super(const AsyncValue.loading()) {
+      : _introCacheBox =
+            Hive.box<String>('surahIntroductionCache'), // Initialize box first
+        super(const AsyncValue.loading()) {
+    // Then call super
     // Optionally fetch immediately upon creation, or require explicit call
     // fetchSurah(); // Let's require explicit call from UI
   }
@@ -49,18 +55,30 @@ class SurahDetailsNotifier extends StateNotifier<SurahDetailsState> {
       // Fetch verses and introduction concurrently or sequentially
       final verses = await repository.getSurahDetails(surahNumber);
 
-      String introduction = 'Introduction not available.'; // Default value
-      try {
-        final geminiService = _ref.read(geminiSurahServiceProvider);
-        introduction = await geminiService.generateSurahIntroduction(
-          surahNumber,
-        );
-        print('Generated Introduction for Surah $surahNumber: $introduction');
-      } catch (geminiError) {
+      // Check intro cache first
+      String? cachedIntro = _introCacheBox.get(surahNumber);
+      String introduction;
+
+      if (cachedIntro != null) {
+        print('Cache hit for Surah $surahNumber introduction.');
+        introduction = cachedIntro;
+      } else {
         print(
-          'Error generating introduction for Surah $surahNumber: $geminiError',
-        );
-        // Use the default introduction string on error
+            'Cache miss for Surah $surahNumber introduction. Fetching from Gemini...');
+        introduction = 'Introduction not available.'; // Default value
+        try {
+          final geminiService = _ref.read(geminiSurahServiceProvider);
+          introduction =
+              await geminiService.generateSurahIntroduction(surahNumber);
+          print('Generated Introduction for Surah $surahNumber: $introduction');
+          // Save fetched intro to cache
+          await _introCacheBox.put(surahNumber, introduction);
+          print('Saved Surah $surahNumber introduction to cache.');
+        } catch (geminiError) {
+          print(
+              'Error generating/caching introduction for Surah $surahNumber: $geminiError');
+          // Use the default introduction string on error
+        }
       }
 
       // Set the combined state
@@ -92,8 +110,8 @@ class SurahDetailsNotifier extends StateNotifier<SurahDetailsState> {
 // StateNotifierProvider.family to create instances based on surahNumber
 final surahDetailsProvider =
     StateNotifierProvider.family<SurahDetailsNotifier, SurahDetailsState, int>((
-      ref,
-      surahNumber,
-    ) {
-      return SurahDetailsNotifier(ref, surahNumber);
-    });
+  ref,
+  surahNumber,
+) {
+  return SurahDetailsNotifier(ref, surahNumber);
+});
