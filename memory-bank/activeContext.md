@@ -29,7 +29,8 @@
 *   Completed Phases 1-3.
 *   Initialized Memory Bank.
 *   **Refactor (Surah Introductions):** Removed the unused `SurahIntroductionService`, `surahIntroductionProvider`, and `assets/data/surah_introductions.json`. Consolidated introduction fetching logic within `surah_details_provider` to use `GeminiSurahService` exclusively, with caching via `surahIntroductionCache` Hive box. Fixed resulting import error in `quran_reader_screen.dart`.
-*   **Build Verification:** Successfully ran `flutter build web` after the refactor and fix.
+*   **Runtime Fix (Surah Details):** Fixed a "Null check operator used on a null value" error in `surah_details_provider.dart` related to handling cached introductions. Ensured correct initialization and conditional assignment.
+*   **Build Verification:** Successfully ran `flutter build web` after the refactor and runtime fix.
 
 ## 3. Next Steps
 

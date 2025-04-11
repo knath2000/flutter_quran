@@ -58,10 +58,30 @@ class SurahDetailsNotifier extends StateNotifier<SurahDetailsState> {
 
       // Check intro cache first
       String? cachedIntro = _introCacheBox.get(surahNumber);
-      String introduction;
+      String introduction =
+          'Introduction not available.'; // Initialize with default
 
-      print('Cache hit for Surah $surahNumber introduction.');
-      introduction = cachedIntro!; // Assert non-null due to check above
+      if (cachedIntro != null) {
+        print('Cache hit for Surah $surahNumber introduction.');
+        introduction = cachedIntro; // Safe assignment due to null check
+      } else {
+        print(
+            'Cache miss for Surah $surahNumber introduction. Fetching from Gemini...');
+        try {
+          final geminiService = _ref.read(geminiSurahServiceProvider);
+          final geminiResult =
+              await geminiService.generateSurahIntroduction(surahNumber);
+          print('Generated Introduction for Surah $surahNumber: $geminiResult');
+          // Save fetched intro to cache
+          await _introCacheBox.put(surahNumber, geminiResult);
+          print('Saved Surah $surahNumber introduction to cache.');
+          introduction = geminiResult; // Overwrite default only on success
+        } catch (geminiError) {
+          print(
+              'Error generating/caching introduction for Surah $surahNumber: $geminiError');
+          // Keep the default value if Gemini fails
+        }
+      }
 
       // Set the combined state
       state = AsyncValue.data((verses, introduction));
