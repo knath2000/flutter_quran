@@ -21,10 +21,11 @@ abstract class IQuranRepository {
 class QuranRepository implements IQuranRepository {
   final QuranApiDataSource _apiDataSource;
   // Use correct type now that VerseAdapter is registered
-  final Box<List<Verse>> _verseCacheBox;
+  // Use Box<List<dynamic>> and cast on retrieval
+  final Box<List<dynamic>> _verseCacheBox;
 
   QuranRepository(this._apiDataSource)
-      : _verseCacheBox = Hive.box<List<Verse>>('quranVerseCache');
+      : _verseCacheBox = Hive.box<List<dynamic>>('quranVerseCache');
 
   @override
   Future<List<SurahInfo>> getSurahList() async {
@@ -46,9 +47,10 @@ class QuranRepository implements IQuranRepository {
     // 1. Check cache first (Hive handles deserialization via adapter)
     // Explicitly cast the data retrieved from Hive
     // Explicitly cast the data retrieved from Hive using .cast<Verse>()
-    final dynamic rawCachedData = _verseCacheBox.get(surahNumber);
+    // Retrieve as List<dynamic> and then cast
+    final List<dynamic>? rawCachedData = _verseCacheBox.get(surahNumber);
     final List<Verse>? cachedVerses =
-        rawCachedData == null ? null : (rawCachedData as List).cast<Verse>();
+        rawCachedData?.cast<Verse>().toList(); // Use cast() and toList()
     if (cachedVerses != null) {
       print('Cache hit for Surah $surahNumber verses.');
       return cachedVerses;

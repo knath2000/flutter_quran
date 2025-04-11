@@ -23,7 +23,8 @@ void main() async {
   // Open boxes
   await Hive.openBox<UserProgress>('userProgressBox');
   // Open box with correct type now that adapter is registered
-  await Hive.openBox<List<Verse>>('quranVerseCache');
+  // Open box as List<dynamic> and cast later
+  await Hive.openBox<List<dynamic>>('quranVerseCache');
   await Hive.openBox<String>(
       'surahIntroductionCache'); // Store introduction strings
   final prefs = await SharedPreferences.getInstance();
