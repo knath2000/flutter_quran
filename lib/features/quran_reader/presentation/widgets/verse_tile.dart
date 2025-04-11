@@ -11,29 +11,10 @@ import 'package:quran_flutter/features/settings/application/settings_providers.d
 import 'package:quran_flutter/core/audio/audio_playback_notifier.dart';
 import 'package:quran_flutter/core/audio/audio_progress_notifier.dart';
 import 'package:quran_flutter/core/audio/playback_state.dart';
-import 'package:quran_flutter/core/providers/data_providers.dart';
+// Removed import for data_providers.dart (quranTextSourceProvider no longer needed here)
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
-// Provider to fetch Arabic text specifically from the JSON source (if available)
-final arabicJsonTextProvider =
-    FutureProvider.family<String?, PlayingVerseIdentifier>((
-      ref,
-      verseId,
-    ) async {
-      // Ensure the initializer has finished before proceeding
-      await ref.watch(jsonDataSourceInitializerProvider.future);
-
-      // Now read the source (it might be null if not on Web/macOS)
-      final jsonSource = ref.read(quranTextSourceProvider);
-      if (jsonSource != null) {
-        // Initialization is guaranteed complete by the await above
-        return await jsonSource.getArabicVerseText(
-          verseId.surahNumber,
-          verseId.verseNumber,
-        );
-      }
-      return null; // Return null if JSON source is not applicable
-    });
+// Removed arabicJsonTextProvider as JSON text source is no longer used
 
 class VerseTile extends ConsumerStatefulWidget {
   final Verse verse;
@@ -53,11 +34,9 @@ class _VerseTileState extends ConsumerState<VerseTile> {
   ) {
     print("_handleTap called for $currentVerseId");
     final audioService = ref.read(audioPlayerServiceProvider);
-    final isCurrentlyPlaying =
-        playbackState.status == PlaybackStatus.playing &&
+    final isCurrentlyPlaying = playbackState.status == PlaybackStatus.playing &&
         playbackState.playingVerseId == currentVerseId;
-    final isCurrentlyPaused =
-        playbackState.status == PlaybackStatus.paused &&
+    final isCurrentlyPaused = playbackState.status == PlaybackStatus.paused &&
         playbackState.playingVerseId == currentVerseId;
 
     print(
@@ -90,9 +69,7 @@ class _VerseTileState extends ConsumerState<VerseTile> {
     final showTransliteration = ref.watch(
       showTransliterationProvider,
     ); // Watch the setting
-    final jsonSource = ref.watch(
-      quranTextSourceProvider,
-    ); // Check if JSON source is available
+    // Removed watch for quranTextSourceProvider (no longer needed)
 
     final currentVerseId = PlayingVerseIdentifier(
       widget.surahNumber,
@@ -108,64 +85,23 @@ class _VerseTileState extends ConsumerState<VerseTile> {
     final bool hasError =
         isActiveVerse && playbackState.status == PlaybackStatus.error;
 
-    final cardColor =
-        isActiveVerse
-            ? colorScheme.primary.withOpacity(0.1)
-            : colorScheme.surface;
+    final cardColor = isActiveVerse
+        ? colorScheme.primary.withOpacity(0.1)
+        : colorScheme.surface;
     final borderColor =
         isActiveVerse ? colorScheme.primary : Colors.transparent;
 
-    // Widget to display Arabic text (conditionally loaded)
-    Widget arabicTextWidget;
-    if (jsonSource != null) {
-      // Use JSON source on Web/macOS
-      final arabicTextAsync = ref.watch(arabicJsonTextProvider(currentVerseId));
-      arabicTextWidget = arabicTextAsync.when(
-        data:
-            (text) => Text(
-              text ??
-                  widget
-                      .verse
-                      .text, // Fallback to verse.text if JSON lookup fails
-              style: GoogleFonts.amiri(
-                fontSize: 22 * fontSizeScale,
-                height: 1.8,
-                color: colorScheme.onSurface,
-              ),
-              textAlign: TextAlign.right,
-              textDirection: TextDirection.rtl,
-            ),
-        loading:
-            () => const SizedBox(
-              // Simple loading indicator
-              height: 30, // Approx height of text
-              width: 30,
-              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-            ),
-        error:
-            (err, stack) => Text(
-              'Error loading text',
-              style: TextStyle(
-                color: colorScheme.error,
-                fontSize: 14 * fontSizeScale,
-              ),
-              textAlign: TextAlign.right,
-              textDirection: TextDirection.rtl,
-            ),
-      );
-    } else {
-      // Use API source (already in verse object) on iOS/Other
-      arabicTextWidget = Text(
-        widget.verse.text,
-        style: GoogleFonts.amiri(
-          fontSize: 22 * fontSizeScale,
-          height: 1.8,
-          color: colorScheme.onSurface,
-        ),
-        textAlign: TextAlign.right,
-        textDirection: TextDirection.rtl,
-      );
-    }
+    // Always display Arabic text from the verse object (populated by API/cache)
+    final Widget arabicTextWidget = Text(
+      widget.verse.text,
+      style: GoogleFonts.amiri(
+        fontSize: 22 * fontSizeScale,
+        height: 1.8,
+        color: colorScheme.onSurface,
+      ),
+      textAlign: TextAlign.right,
+      textDirection: TextDirection.rtl,
+    );
 
     return InkWell(
       onTap: () {
@@ -223,8 +159,7 @@ class _VerseTileState extends ConsumerState<VerseTile> {
                     textAlign: TextAlign.center,
                     style: textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurface.withOpacity(0.8),
-                      fontSize:
-                          (textTheme.bodyMedium?.fontSize ?? 14) *
+                      fontSize: (textTheme.bodyMedium?.fontSize ?? 14) *
                           fontSizeScale,
                     ),
                   ),
@@ -247,8 +182,7 @@ class _VerseTileState extends ConsumerState<VerseTile> {
                       color: colorScheme.onSurface.withOpacity(
                         0.7,
                       ), // Slightly less prominent than translation
-                      fontSize:
-                          (textTheme.bodyMedium?.fontSize ?? 14) *
+                      fontSize: (textTheme.bodyMedium?.fontSize ?? 14) *
                           fontSizeScale, // Match translation size base
                     ),
                   ),
