@@ -1,4 +1,4 @@
-# Progress (as of commit cc8a5ed)
+# Progress (as of commit 47f073a)
 
 ## What Works
 
@@ -27,6 +27,8 @@
 - ✅ API Key handling via `--dart-define` implemented for Vercel builds.
 - ✅ Hive caching implemented for Surah verses and introductions.
 - ✅ Hive `VerseAdapter` generated and registered.
+- ✅ `QuranReaderScreen` layout refactored: `SurahIntroductionCard` now scrolls with verses.
+- ✅ Hive cache `TypeError` resolved by explicit casting in `QuranRepository`.
 
 ### Web Platform
 - ✅ Vercel deployment setup functional.
@@ -70,8 +72,6 @@
 - **JS Bundle Size:** Reduced by using HTML renderer, but overall JS execution time and main thread work remain high. Further reduction likely needs advanced analysis/code splitting.
 - **Accessibility Viewport:** Lighthouse flags `user-scalable="no"` (Injected by Flutter build).
 - **Deprecated API:** Lighthouse flags usage of a deprecated API (Specific API hard to identify).
-// - **Missing Source Maps:** Source maps are now enabled in the build script.
-- **Scrolling:** Potential scrolling issues in the `QuranReaderScreen` with large Surahs (pre-pagination state).
 - **API Data:** Transliteration availability/accuracy depends on the `alquran.cloud` API.
 
-*(Note: This progress reflects the state after implementing Hive caching up to commit `cc8a5ed`.)*
+*(Note: This progress reflects the state after fixing the Hive cache type error up to commit `47f073a`.)*

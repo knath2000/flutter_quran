@@ -1,58 +1,49 @@
 # Active Context
 
-## Current Focus (as of commit cc8a5ed)
+## Current Focus (as of commit 47f073a)
 
-The focus was on successfully integrating the Google Gemini API to dynamically fetch Surah introductions and display them in the `QuranReaderScreen`. This involved resolving API key handling issues, refactoring state management, and updating UI components.
+The focus shifted to UI layout refinement and bug fixing. Specifically:
+1.  Refactoring the `QuranReaderScreen` layout to ensure the `SurahIntroductionCard` scrolls with the verses.
+2.  Resolving a `TypeError` encountered when reading cached verse data from Hive in release builds.
 
-## Recent Changes (leading up to commit 8e47d5c)
+## Recent Changes (leading up to commit 47f073a)
 
-*   **Gemini API Integration:**
-    *   Added `google_generative_ai` dependency.
-    *   Created `GeminiSurahService` (`lib/core/services/gemini_surah_service.dart`) to handle API calls.
-    *   Updated `build.sh` to pass the `GEMINI_API_KEY` via `--dart-define` for Vercel builds, resolving authentication errors.
-*   **State Management Refactor:**
-    *   Modified `SurahDetailsNotifier` (`lib/features/quran_reader/application/providers/surah_details_provider.dart`) state to hold both `List<Verse>` and the `String` introduction using a record `(List<Verse>, String)`.
-    *   Updated `fetchSurah` method to call the `GeminiSurahService` once per Surah and combine results into the new state structure.
-    *   Removed the incorrect `introduction` field previously added to the `Verse` model.
-*   **UI Updates:**
-    *   Updated `QuranReaderScreen` to consume the new combined state from `surahDetailsProvider`.
-    *   Modified `QuranReaderScreen` to derive the `AsyncValue<String?>` for the introduction from the combined state and pass it correctly to `SurahIntroductionCard`.
-    *   Updated `AppLifecycleObserver` to correctly access verse data from the new state record for autoplay logic.
-*   **Performance Optimization:**
-    *   Switched Flutter web renderer to HTML (`--web-renderer html` in `build.sh`) to reduce initial load size.
-    *   Deferred Quran JSON data initialization in `main.dart` to improve FCP.
-    *   Added preconnect links (`<link rel="preconnect">`) to `web/index.html` for fonts and API endpoints.
-    *   Fixed Vercel build errors related to Flutter SDK version and dependency conflicts (`flutter_lints`).
-    *   Applied minor `const` optimizations to `SurahSelectionScreen`.
-    *   Enabled source maps in web release builds (`--source-maps` in `build.sh`).
-*   **Hive Caching:**
-    *   Implemented Hive caching for Surah verses (`QuranRepository`) and introductions (`SurahDetailsNotifier`).
-    *   Added Hive annotations to `Verse` model and generated `VerseAdapter` using build_runner.
-    *   Registered `VerseAdapter` and opened new Hive boxes (`quranVerseCache`, `surahIntroductionCache`) in `main.dart`.
-    *   Fixed a build error by correcting type casting (`List` to `Set`) in the generated `user_progress.g.dart` adapter.
+*   **UI Layout Refactor (commit `064eb7a`):**
+    *   Modified `QuranReaderScreen` (`lib/features/quran_reader/presentation/screens/quran_reader_screen.dart`) to use a single `ListView.builder` for both the `SurahIntroductionCard` (as the first item) and the `VerseTile` list. This replaced the previous `Column` + `Expanded` structure, making the introduction scrollable.
+*   **Hive Cache Fix (commit `47f073a`):**
+    *   Updated `QuranRepository` (`lib/features/quran_reader/data/repositories/quran_repository.dart`) to explicitly cast the data retrieved from the `quranVerseCache` Box using `List<Verse>.from()` to prevent `TypeError` in minified/release builds.
+*   **(Previous changes up to commit `cc8a5ed` remain relevant):**
+    *   Gemini API Integration (Service, API Key handling).
+    *   State Management Refactor (`surahDetailsProvider` using record).
+    *   UI Updates (Consuming combined state, deriving intro AsyncValue).
+    *   Performance Optimizations (HTML renderer, deferred init, preconnect, source maps).
+    *   Hive Caching Implementation (Verses and Introductions).
 
 ## Active Decisions
 
 *   **Surah Introduction Source:** Google Gemini API (`gemini-2.0-flash`) is used for dynamic Surah introductions.
-*   **API Key Handling:** API key is passed via `--dart-define` during the build process, sourced from Vercel environment variables for deployment.
-*   **State Structure:** `surahDetailsProvider` now manages a combined state `AsyncValue<(List<Verse>, String)>` to hold both verses and the introduction.
+*   **API Key Handling:** API key is passed via `--dart-define` during the build process.
+*   **State Structure:** `surahDetailsProvider` manages a combined state `AsyncValue<(List<Verse>, String)>`.
 *   **UI Integration:** `SurahIntroductionCard` displays the introduction fetched via `surahDetailsProvider`.
+*   **QuranReaderScreen Layout:** Uses a single `ListView.builder` to display the introduction card followed by verse tiles, ensuring both scroll together.
 *   **Web Renderer:** Explicitly using the HTML renderer for web builds.
-*   **Caching Strategy:** Using Hive (backed by IndexedDB on web) for local caching of verses and introductions to improve performance on subsequent loads.
+*   **Caching Strategy:** Using Hive for local caching of verses and introductions.
+*   **Hive Data Retrieval:** Explicitly casting data read from Hive boxes (e.g., `List<Verse>.from(rawData)`) is necessary to avoid runtime type errors, especially in release builds.
 
 ## Next Steps
 
-1.  **Test Gemini Integration:** Thoroughly test the Surah introduction display across different Surahs and network conditions.
-2.  **Refine Error Handling:** Improve error handling for Gemini API calls within `SurahDetailsNotifier` (e.g., display a specific message if introduction fails).
-3.  **UI Polish:** Review and potentially refine the styling and layout of the `SurahIntroductionCard` now that it displays real data.
+1.  **Test UI/Cache Fix:** Thoroughly test the `QuranReaderScreen` scrolling behavior and verify that the Hive cache `TypeError` is resolved across different Surahs and build modes (debug/release).
+2.  **Test Gemini Integration:** Thoroughly test the Surah introduction display across different Surahs and network conditions.
+3.  **Refine Error Handling:** Improve error handling for Gemini API calls within `SurahDetailsNotifier`.
 4.  **Performance Analysis:** Further investigate LCP element and main thread work using browser DevTools if needed.
 5.  **Address Known Issues:** Revisit persistent issues (viewport accessibility, deprecated API) noting limitations.
-6.  **Continue Core Feature Development:** Resume work on other planned features (e.g., user authentication, gamification).
+6.  **Continue Core Feature Development:** Resume work on other planned features (e.g., user authentication, gamification, pagination).
 
 ## Current Considerations
 
-*   **API Key Security:** Ensure the API key handling remains secure, especially if considering other build environments.
-*   **Gemini API Costs/Quotas:** Monitor usage of the Gemini API.
-*   **Hive Adapters:** Ensure Hive type adapters (`.g.dart` files) are regenerated via build_runner if underlying models change significantly.
-*   **Viewport Accessibility:** The `user-scalable=no` issue persists due to Flutter's build process overriding `index.html`.
-*   **Bundle Size:** Further JS bundle size reduction likely requires advanced analysis tools (DevTools, source-map-explorer).
+*   **API Key Security:** Ensure the API key handling remains secure.
+*   **Gemini API Costs/Quotas:** Monitor usage.
+*   **Hive Adapters:** Ensure Hive type adapters are regenerated if models change.
+*   **Hive Casting:** Remember the necessity of explicit casting when reading complex types from Hive.
+*   **Viewport Accessibility:** The `user-scalable=no` issue persists.
+*   **Bundle Size:** Further JS bundle size reduction likely requires advanced analysis.

@@ -134,6 +134,7 @@
 - Repository methods update Firestore
 - Firestore updates trigger UI updates
 - Hive used for local caching of verses and introductions to reduce API calls.
+  - **Important:** Explicit casting (e.g., `List<Verse>.from(rawData)`) is required when reading complex types from Hive boxes to avoid runtime `TypeError` in minified/release builds.
 
 ### Web Optimizations
 - Resource preloading (`<link rel="preload">` for fonts in `index.html`)

@@ -57,6 +57,7 @@ Each feature follows a simplified clean architecture approach:
 - Hive (backed by IndexedDB on web) is used for local caching.
 - **Verse Cache:** `QuranRepository` checks `quranVerseCache` (Box<List<Verse>>) before API calls. Fetched verses are stored using the Surah number as the key. Requires `VerseAdapter`.
 - **Introduction Cache:** `SurahDetailsNotifier` checks `surahIntroductionCache` (Box<String>) before Gemini API calls. Fetched introductions are stored using the Surah number as the key.
+  - **Important:** Explicit casting (e.g., `List<Verse>.from(rawData)`) is required when reading complex types from Hive boxes to avoid runtime `TypeError` in minified/release builds.
 
 ## State Management
 

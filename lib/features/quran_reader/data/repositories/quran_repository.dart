@@ -45,9 +45,10 @@ class QuranRepository implements IQuranRepository {
     // 1. Check cache first
     // 1. Check cache first (Hive handles deserialization via adapter)
     // Explicitly cast the data retrieved from Hive
+    // Explicitly cast the data retrieved from Hive using .cast<Verse>()
     final dynamic rawCachedData = _verseCacheBox.get(surahNumber);
     final List<Verse>? cachedVerses =
-        rawCachedData == null ? null : List<Verse>.from(rawCachedData);
+        rawCachedData == null ? null : (rawCachedData as List).cast<Verse>();
     if (cachedVerses != null) {
       print('Cache hit for Surah $surahNumber verses.');
       return cachedVerses;
