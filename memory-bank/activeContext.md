@@ -28,6 +28,8 @@
 *   **Bug Fixes:** Added macOS network entitlements, temporarily commented out missing Rive animation.
 *   Completed Phases 1-3.
 *   Initialized Memory Bank.
+*   **Refactor (Surah Introductions):** Removed the unused `SurahIntroductionService`, `surahIntroductionProvider`, and `assets/data/surah_introductions.json`. Consolidated introduction fetching logic within `surah_details_provider` to use `GeminiSurahService` exclusively, with caching via `surahIntroductionCache` Hive box. Fixed resulting import error in `quran_reader_screen.dart`.
+*   **Build Verification:** Successfully ran `flutter build web` after the refactor and fix.
 
 ## 3. Next Steps
 
@@ -53,3 +55,4 @@
 *   **Gamification Rules:** Still need definition.
 *   **Persistence:** Still using Hive/SharedPreferences split.
 *   **Surah Selection UI:** Still basic list view.
+*   **Surah Introduction Source:** Exclusively uses Google Gemini API via `GeminiSurahService` called from `surah_details_provider`, with results cached in the `surahIntroductionCache` Hive box. The previous local JSON asset implementation has been removed.

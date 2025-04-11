@@ -24,7 +24,8 @@ class SurahSelectionScreen extends ConsumerWidget {
           // Points Display
           Padding(
             padding: EdgeInsets.only(
-                right: 8.0), // Cannot be const due to Theme access below
+              right: 8.0,
+            ), // Cannot be const due to Theme access below
             child: Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -100,8 +101,8 @@ class SurahSelectionScreen extends ConsumerWidget {
           // Layer 1: Starry Background
           StarryBackground(
             starColor: Theme.of(context).colorScheme.primary.withOpacity(
-                  0.7,
-                ), // Gold stars, slightly transparent
+              0.7,
+            ), // Gold stars, slightly transparent
             numberOfStars: 100, // Adjust count as needed
           ),
           // Layer 2: Rive Animation (e.g., subtle background movement)
@@ -120,8 +121,8 @@ class SurahSelectionScreen extends ConsumerWidget {
               gradient: LinearGradient(
                 colors: [
                   Theme.of(context).primaryColor.withOpacity(
-                        0.6,
-                      ), // Semi-transparent gradient overlay
+                    0.6,
+                  ), // Semi-transparent gradient overlay
                   Theme.of(context).colorScheme.surface.withOpacity(0.85),
                 ],
                 begin: Alignment.topCenter,
@@ -137,7 +138,7 @@ class SurahSelectionScreen extends ConsumerWidget {
                   // Can be const
                   child: const Text(
                     'No Surahs found. Check API connection or response.',
-                    style: const TextStyle(
+                    style: TextStyle(
                       // Can be const
                       color: Colors.white,
                     ),
@@ -166,29 +167,28 @@ class SurahSelectionScreen extends ConsumerWidget {
                         horizontal: 16.0,
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment
-                            .center, // Center children horizontally
+                        crossAxisAlignment:
+                            CrossAxisAlignment
+                                .center, // Center children horizontally
                         children: [
                           Text(
                             '${surah.number}. ${surah.englishName}',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.titleLarge, // Larger title style
+                            style:
+                                Theme.of(
+                                  context,
+                                ).textTheme.titleLarge, // Larger title style
                           ),
                           SizedBox(
-                              height:
-                                  4), // Cannot be const due to Theme access below
+                            height: 4,
+                          ), // Cannot be const due to Theme access below
                           Text(
                             surah.name, // Arabic name
                             style: Theme.of(
                               context,
                             ).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(
-                                          0.7), // Slightly dimmer color
-                                ),
+                              color: Theme.of(context).colorScheme.onSurface
+                                  .withOpacity(0.7), // Slightly dimmer color
+                            ),
                           ),
                         ],
                       ),
@@ -197,8 +197,10 @@ class SurahSelectionScreen extends ConsumerWidget {
                 },
               );
             },
-            loading: () => Center(
-                child: const CircularProgressIndicator()), // Can add const
+            loading:
+                () => Center(
+                  child: const CircularProgressIndicator(),
+                ), // Can add const
             error: (error, stackTrace) {
               print('Error loading Surah list UI: $error\n$stackTrace');
               return Center(

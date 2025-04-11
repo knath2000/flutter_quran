@@ -7,7 +7,7 @@ import 'package:quran_flutter/core/models/surah_info.dart'; // Import SurahInfo
 import 'package:quran_flutter/core/models/verse.dart';
 import 'package:quran_flutter/features/quran_reader/application/providers/surah_details_provider.dart';
 import 'package:quran_flutter/features/quran_reader/application/providers/surah_list_provider.dart';
-import 'package:quran_flutter/features/quran_reader/application/providers/surah_introduction_provider.dart'; // Import new provider
+// Removed unused import for surah_introduction_provider.dart
 import 'package:quran_flutter/features/quran_reader/presentation/widgets/surah_introduction_card.dart';
 import 'package:quran_flutter/features/quran_reader/presentation/widgets/verse_tile.dart';
 import 'package:quran_flutter/features/settings/application/settings_providers.dart';

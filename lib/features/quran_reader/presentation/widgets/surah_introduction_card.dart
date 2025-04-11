@@ -40,7 +40,7 @@ class SurahIntroductionCard extends HookWidget {
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
           elevation: 2,
-          color: colorScheme.surfaceVariant.withOpacity(
+          color: colorScheme.surfaceContainerHighest.withOpacity(
             0.5,
           ), // Restore original semi-transparent color
           shape: RoundedRectangleBorder(
@@ -89,13 +89,13 @@ class SurahIntroductionCard extends HookWidget {
                               end: Alignment.bottomCenter,
                               stops: const [0.0, 0.6, 1.0], // Start fade later
                               colors: [
-                                colorScheme.surfaceVariant.withOpacity(
+                                colorScheme.surfaceContainerHighest.withOpacity(
                                   0.0,
                                 ), // Transparent at top
-                                colorScheme.surfaceVariant.withOpacity(
+                                colorScheme.surfaceContainerHighest.withOpacity(
                                   0.9,
                                 ), // Semi-transparent middle
-                                colorScheme.surfaceVariant.withOpacity(
+                                colorScheme.surfaceContainerHighest.withOpacity(
                                   1.0,
                                 ), // Opaque at bottom matching card
                               ],
@@ -120,9 +120,8 @@ class SurahIntroductionCard extends HookWidget {
                               // Add subtle shadow for readability
                               Shadow(
                                 blurRadius: 4.0,
-                                color: colorScheme.surfaceVariant.withOpacity(
-                                  0.7,
-                                ),
+                                color: colorScheme.surfaceContainerHighest
+                                    .withOpacity(0.7),
                                 offset: const Offset(1.0, 1.0),
                               ),
                             ],

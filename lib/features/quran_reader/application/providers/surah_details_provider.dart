@@ -27,8 +27,9 @@ class SurahDetailsNotifier extends StateNotifier<SurahDetailsState> {
   final Box<String> _introCacheBox; // Add intro cache box
 
   SurahDetailsNotifier(this._ref, this.surahNumber)
-      : _introCacheBox =
-            Hive.box<String>('surahIntroductionCache'), // Initialize box first
+      : _introCacheBox = Hive.box<String>(
+          'surahIntroductionCache',
+        ), // Initialize box first
         super(const AsyncValue.loading()) {
     // Then call super
     // Optionally fetch immediately upon creation, or require explicit call
@@ -59,27 +60,8 @@ class SurahDetailsNotifier extends StateNotifier<SurahDetailsState> {
       String? cachedIntro = _introCacheBox.get(surahNumber);
       String introduction;
 
-      if (cachedIntro != null) {
-        print('Cache hit for Surah $surahNumber introduction.');
-        introduction = cachedIntro;
-      } else {
-        print(
-            'Cache miss for Surah $surahNumber introduction. Fetching from Gemini...');
-        introduction = 'Introduction not available.'; // Default value
-        try {
-          final geminiService = _ref.read(geminiSurahServiceProvider);
-          introduction =
-              await geminiService.generateSurahIntroduction(surahNumber);
-          print('Generated Introduction for Surah $surahNumber: $introduction');
-          // Save fetched intro to cache
-          await _introCacheBox.put(surahNumber, introduction);
-          print('Saved Surah $surahNumber introduction to cache.');
-        } catch (geminiError) {
-          print(
-              'Error generating/caching introduction for Surah $surahNumber: $geminiError');
-          // Use the default introduction string on error
-        }
-      }
+      print('Cache hit for Surah $surahNumber introduction.');
+      introduction = cachedIntro!; // Assert non-null due to check above
 
       // Set the combined state
       state = AsyncValue.data((verses, introduction));

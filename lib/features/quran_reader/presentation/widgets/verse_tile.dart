@@ -51,7 +51,7 @@ class _VerseTileState extends ConsumerState<VerseTile> {
     AudioPlaybackState playbackState,
     PlayingVerseIdentifier currentVerseId,
   ) {
-    print("_handleTap called for ${currentVerseId}");
+    print("_handleTap called for $currentVerseId");
     final audioService = ref.read(audioPlayerServiceProvider);
     final isCurrentlyPlaying =
         playbackState.status == PlaybackStatus.playing &&

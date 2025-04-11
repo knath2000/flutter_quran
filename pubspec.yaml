@@ -82,7 +82,6 @@ flutter:
   assets:
     - assets/rive/ # Declare the Rive assets directory
     - assets/data/ # Declare the data assets directory
-    - assets/data/surah_introductions.json # Add new JSON asset
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

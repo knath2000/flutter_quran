@@ -30,11 +30,12 @@
 
 *   **Performance:** Must maintain smooth performance despite heavy animation usage, especially on Web and potentially lower-spec iOS devices. Requires careful optimization and testing.
 *   **Platform Differences:** Need to account for UI/UX differences and potential API variations between macOS, Web, and iOS.
-*   **API Dependencies:** Reliant on external public APIs for core content. Need robust error handling, caching, and potential fallbacks. API rate limits or changes could impact the app.
-*   **Asset Management:** Requires management of potentially large audio files and animation assets (Rive/Lottie files). Consider asset bundling strategies or on-demand downloading/caching.
-*   **Child Safety:** Ensure no external links or inappropriate content can be accessed inadvertently. API responses need careful handling.
+*   **API Dependencies:** Reliant on external public APIs (`alquran.cloud`, Google Gemini) for core content. Need robust error handling, caching, and potential fallbacks. API rate limits or changes could impact the app.
+*   **Gemini API Key:** Requires a `GEMINI_API_KEY` environment variable to be set for the Google Gemini API calls to function. This key needs secure management, especially for builds/deployments.
+*   **Asset Management:** Requires management of potentially large audio files and animation assets (Rive/Lottie files). Consider asset bundling strategies or on-demand downloading/caching. (Local JSON for introductions removed).
+*   **Child Safety:** Ensure no external links or inappropriate content can be accessed inadvertently. API responses (especially generative ones from Gemini) need careful handling and review.
 
-## 5. Data Sources (Planned)
+## 5. Data Sources (Active)
 
-*   **Quran Text/Translation/Transliteration:** Public APIs (e.g., `alquran.cloud`, `quran.com API`, `fawazahmed0/quran-api`). Specific API and translation/reciter choices TBD after vetting.
-*   **Audio:** Public APIs or potentially separate hosting/bundling if specific child-friendly reciters aren't available via primary APIs.
+*   **Quran Text/Translation/Transliteration/Audio:** `alquran.cloud` API (via `QuranApiDataSource`). Specific editions used are defined in `QuranApiDataSource`.
+*   **Surah Introductions:** Google Gemini API (`gemini-2.0-flash` model via `GeminiSurahService`). Results are cached in Hive (`surahIntroductionCache`).

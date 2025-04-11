@@ -19,6 +19,7 @@
     *   Placeholder `BadgesScreen` created with route and navigation.
     *   Streak update logic implemented and called on provider init.
     *   Logic added to mark verses as completed and trigger badge checks.
+    *   Surah introductions are fetched via Google Gemini API (using `GeminiSurahService` called from `surah_details_provider`) and cached in Hive (`surahIntroductionCache`).
 
 ## 2. What's Left to Build
 
