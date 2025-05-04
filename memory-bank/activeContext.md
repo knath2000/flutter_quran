@@ -18,8 +18,8 @@
     *   Implemented logic to automatically scroll the list using `ItemScrollController.scrollTo` to keep the currently playing verse in view (aligned near top).
     *   Corrected property access for verse number in `PlayingVerseIdentifier`.
 *   **AI Translation (Phase 4 - Implemented):**
-    *   Added `flutter_dotenv` for API key management.
-    *   Created `AiTranslationService` using `google_generative_ai` package to call Gemini API (`gemini-2.5-flash-preview-04-17` model) with a specific prompt.
+    *   Switched API key management from `flutter_dotenv` to `--dart-define`.
+    *   Created `AiTranslationService` using `google_generative_ai` package to call Gemini API (`gemini-1.5-flash` model used due to issues with 2.5-preview) with a specific prompt. Key accessed via `String.fromEnvironment`.
     *   Added `aiTranslationEnabledProvider` setting and UI toggle in `SettingsScreen`.
     *   Created `aiTranslationProvider` (AsyncNotifierProvider.family) for state management.
     *   Implemented right-to-left swipe gesture on `VerseTile` using `GestureDetector`.
@@ -66,4 +66,4 @@
 *   **Persistence:** Still using Hive/SharedPreferences split.
 *   **Surah Selection UI:** Still basic list view.
 *   **Surah Introduction Source:** Exclusively uses Google Gemini API (`gemini-1.5-flash` model via `GeminiSurahService`) called from `surah_details_provider`, with results cached in the `surahIntroductionCache` Hive box. The previous local JSON asset implementation has been removed.
-*   **AI Translation Source:** Uses Google Gemini API (`gemini-2.5-flash-preview-04-17` model via `AiTranslationService`). Requires `.env` file with `GEMINI_API_KEY`.
+*   **AI Translation Source:** Uses Google Gemini API (`gemini-1.5-flash` model via `AiTranslationService`). Requires `GEMINI_API_KEY` passed via `--dart-define`.

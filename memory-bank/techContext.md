@@ -40,4 +40,4 @@
 
 *   **Quran Text/Translation/Transliteration/Audio:** `alquran.cloud` API (via `QuranApiDataSource`). Specific editions used are defined in `QuranApiDataSource`.
 *   **Surah Introductions:** Google Gemini API (`gemini-1.5-flash` model via `GeminiSurahService`). Results are cached in Hive (`surahIntroductionCache`).
-*   **AI Verse Translation:** Google Gemini API (`gemini-2.5-flash-preview-04-17` model via `AiTranslationService`). Triggered by user swipe.
+*   **AI Verse Translation:** Google Gemini API (`gemini-1.5-flash` model via `AiTranslationService`). Triggered by user swipe. (Using 1.5-flash due to potential availability issues with 2.5-preview).
