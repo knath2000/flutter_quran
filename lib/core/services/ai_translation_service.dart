@@ -30,7 +30,7 @@ class AiTranslationService {
       //   SafetySetting(HarmCategory.hateSpeech, HarmBlockThreshold.medium),
       // ];
       _model = GenerativeModel(
-        model: 'gemini-2.5-flash-preview-04-17', // Correct model name
+        model: 'gemini-1.5-flash', // Use stable flash model for testing
         apiKey: apiKey,
         // safetySettings: safetySettings, // Uncomment if using safety settings
       );
