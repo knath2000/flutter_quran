@@ -4,46 +4,45 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod for 
 
 class AiTranslationService {
   GenerativeModel? _model;
-  bool _isInitialized = false;
-  String? _initializationError;
+  // No need for _isInitialized or _initializationError flags with lazy init
 
-  AiTranslationService() {
-    _initialize();
-  }
+  AiTranslationService(); // Constructor does nothing now
 
-  void _initialize() {
-    if (_isInitialized) return;
+  // Lazy initialization method
+  GenerativeModel _getModel() {
+    // If model already exists, return it
+    if (_model != null) return _model!;
 
+    // Otherwise, try to initialize it now
     final apiKey = dotenv.env['GEMINI_API_KEY'];
-    if (apiKey != null && apiKey.isNotEmpty) {
-      try {
-        // TODO: Add safety settings if needed
-        // final safetySettings = [
-        //   SafetySetting(HarmCategory.harassment, HarmBlockThreshold.medium),
-        //   SafetySetting(HarmCategory.hateSpeech, HarmBlockThreshold.medium),
-        // ];
-        _model = GenerativeModel(
-          model: 'gemini-2.5-flash-preview-04-17', // Updated model name
-          apiKey: apiKey,
-          // safetySettings: safetySettings, // Uncomment if using safety settings
-        );
-        _isInitialized = true;
-        print("AI Translation Service Initialized Successfully.");
-      } catch (e) {
-        _initializationError = "Error initializing GenerativeModel: $e";
-        print("ERROR: $_initializationError");
-      }
-    } else {
-      _initializationError = "GEMINI_API_KEY not found or empty in .env file.";
-      print("ERROR: $_initializationError");
+    if (apiKey == null || apiKey.isEmpty) {
+      print(
+          "ERROR: GEMINI_API_KEY not found or empty when trying to initialize model.");
+      throw Exception("API Key for AI Translation is missing.");
+    }
+
+    try {
+      // TODO: Add safety settings if needed
+      // final safetySettings = [
+      //   SafetySetting(HarmCategory.harassment, HarmBlockThreshold.medium),
+      //   SafetySetting(HarmCategory.hateSpeech, HarmBlockThreshold.medium),
+      // ];
+      _model = GenerativeModel(
+        model: 'gemini-2.5-flash-preview-04-17', // Correct model name
+        apiKey: apiKey,
+        // safetySettings: safetySettings, // Uncomment if using safety settings
+      );
+      print("AI Translation Service Initialized Lazily.");
+      return _model!;
+    } catch (e) {
+      print("Error initializing GenerativeModel lazily: $e");
+      throw Exception("Failed to initialize AI Model: $e");
     }
   }
 
   Future<String> fetchAiTranslation(int surahNumber, int verseNumber) async {
-    if (!_isInitialized || _model == null) {
-      throw Exception(
-          "AI Model not initialized. Check API Key and logs. Error: $_initializationError");
-    }
+    // Get the model (initializes on first call)
+    final model = _getModel();
 
     final prompt =
         'Give me, an educated 21 year old male living in the United States, a short but clear and understandable modern English translation, in your own words, for Quran $surahNumber:$verseNumber. Only respond with the translation and no other text';
@@ -56,7 +55,8 @@ class AiTranslationService {
       // final generationConfig = GenerationConfig(
       //   temperature: 0.7,
       // );
-      final response = await _model!.generateContent(
+      final response = await model.generateContent(
+        // Use the local 'model' variable
         content,
         // generationConfig: generationConfig, // Uncomment if using config
       );
@@ -80,6 +80,6 @@ class AiTranslationService {
 
 // Provider for the service
 final aiTranslationServiceProvider = Provider<AiTranslationService>((ref) {
-  // The service initializes itself in the constructor
+  // Constructor is now empty, initialization is lazy
   return AiTranslationService();
 });
