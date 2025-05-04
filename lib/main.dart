@@ -1,7 +1,5 @@
-import 'dart:math'; // Import for min() used in logging
-
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import dotenv
+// Removed dotenv import
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,12 +15,7 @@ import 'package:quran_flutter/core/observers/app_lifecycle_observer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env"); // Load .env file
-  // Add logging to verify dotenv loading
-  print(
-      "Dotenv loaded. GEMINI_API_KEY exists: ${dotenv.env.containsKey('GEMINI_API_KEY')}");
-  print(
-      "GEMINI_API_KEY value: ${dotenv.env['GEMINI_API_KEY']?.substring(0, min(dotenv.env['GEMINI_API_KEY']?.length ?? 0, 5))}..."); // Print first few chars only
+  // Removed dotenv.load() call
   await Hive.initFlutter();
   // Register adapters
   Hive.registerAdapter(UserProgressAdapter());

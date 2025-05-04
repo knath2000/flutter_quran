@@ -1,6 +1,3 @@
-import 'dart:math'; // Import for min()
-
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod for Provider
 
@@ -15,16 +12,15 @@ class AiTranslationService {
     // If model already exists, return it
     if (_model != null) return _model!;
 
-    // Otherwise, try to initialize it now
-    // Add logging to see the state of dotenv.env here
-    print(
-        "Attempting lazy initialization in _getModel(). dotenv.env keys: ${dotenv.env.keys.toList()}");
-    final apiKey = dotenv.env['GEMINI_API_KEY'];
-    print(
-        "API Key retrieved in _getModel: ${apiKey?.substring(0, min(apiKey?.length ?? 0, 5))}..."); // Log first few chars
-    if (apiKey == null || apiKey.isEmpty) {
-      print("ERROR: GEMINI_API_KEY is null or empty in _getModel().");
-      throw Exception("API Key for AI Translation is missing.");
+    // Otherwise, try to initialize it now using String.fromEnvironment
+    // Retrieve the API key passed via --dart-define
+    const apiKey = String.fromEnvironment('GEMINI_API_KEY');
+
+    if (apiKey.isEmpty) {
+      print("ERROR: GEMINI_API_KEY environment variable is not set or empty.");
+      // Provide a more informative error message for the user/developer
+      throw Exception(
+          "API Key for AI Translation is missing. Ensure it's set via --dart-define during build or in Vercel environment variables.");
     }
 
     try {
