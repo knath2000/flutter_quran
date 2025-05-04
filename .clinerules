@@ -24,3 +24,15 @@ This file captures key learnings, patterns, preferences, and project intelligenc
 ## Tool Usage Notes
 
 *   **`apply_diff` Reliability:** Be cautious with `apply_diff`. If it fails or gives conflicting success/failure messages, always use `read_file` immediately before retrying the diff to ensure the search pattern matches the current file content exactly. Silent failures can occur.
+## AI Integration Patterns
+
+*   **API Key Management:** Use `flutter_dotenv` to load API keys (like `GEMINI_API_KEY`) from a `.env` file. Ensure `.env` is in `.gitignore` and declared as an asset in `pubspec.yaml`. Load dotenv early in `main.dart`.
+*   **Service Layer:** Encapsulate API calls within a dedicated service class (e.g., `AiTranslationService`). Initialize the API client (`GenerativeModel`) within the service. Provide a Riverpod `Provider` for the service.
+*   **State Management (Async Family):** For features requiring on-demand fetching based on specific parameters (like fetching a translation for a specific verse), use `AsyncNotifierProvider.family`.
+    *   Define a simple class or record (with `==` and `hashCode` overrides) for the family argument (e.g., `VerseIdentifier`).
+    *   Implement the `build` method to return an initial non-loading state (e.g., empty string or default value). Do *not* trigger the fetch in `build`.
+    *   Create a separate method within the `AsyncNotifier` (e.g., `fetchTranslation()`) to handle the actual data fetching. Call this method explicitly when needed (e.g., when the UI element is triggered).
+    *   Use `AsyncValue.guard` within the fetch method to automatically handle loading states and capture errors.
+    *   Include checks within the fetch method (`if (state.isLoading || _fetchAttempted || state.hasError) return;`) to prevent redundant fetches if the method is called multiple times rapidly for the same instance.
+*   **UI Trigger:** Use `GestureDetector` for swipe actions (`onHorizontalDragEnd`). Check the primary velocity to determine swipe direction.
+*   **UI Display (Modal):** Use `showModalBottomSheet` to display fetched AI content. Use `DraggableScrollableSheet` inside for flexible height. Trigger the `AsyncNotifierProvider.family`'s fetch method *before* showing the sheet (e.g., using `Future.microtask` or directly before the `showModalBottomSheet` call). Use a `Consumer` inside the sheet's builder to watch the specific provider instance and display loading/data/error states.

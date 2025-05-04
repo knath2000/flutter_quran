@@ -13,6 +13,7 @@ import 'package:quran_flutter/core/audio/audio_progress_notifier.dart';
 import 'package:quran_flutter/core/audio/playback_state.dart';
 // Removed import for data_providers.dart (quranTextSourceProvider no longer needed here)
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:quran_flutter/features/quran_reader/application/providers/ai_translation_provider.dart'; // Import AI provider
 
 // Removed arabicJsonTextProvider as JSON text source is no longer used
 
@@ -319,7 +320,154 @@ class _VerseTileState extends ConsumerState<VerseTile> {
       child: cardContent, // Use the (potentially decorated) card content
     );
 
-    // Return the final widget
-    return verseWidget;
+    // Wrap the InkWell with GestureDetector for swipe detection
+    return GestureDetector(
+      onHorizontalDragEnd: (details) {
+        // Check for right-to-left swipe (negative primary velocity)
+        // Adjust velocity threshold as needed for sensitivity
+        if (details.primaryVelocity != null &&
+            details.primaryVelocity! < -300) {
+          final aiEnabled = ref.read(aiTranslationEnabledProvider);
+          if (aiEnabled) {
+            print(
+                "AI Translation swipe detected for ${widget.surahNumber}:${widget.verse.numberInSurah}");
+            // Show the bottom sheet, which will trigger the fetch
+            _showAiTranslationSheet(
+                context, ref, widget.surahNumber, widget.verse.numberInSurah);
+          } else {
+            print("AI Translation swipe detected but feature is disabled.");
+            // Optionally show a snackbar informing the user it's disabled
+            // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            //   content: Text('AI Translation feature is disabled in Settings.'),
+            //   duration: Duration(seconds: 2),
+            // ));
+          }
+        }
+      },
+      child: verseWidget, // The existing InkWell/Card structure
+    );
+  } // End build method
+
+  // --- Helper Method for Bottom Sheet ---
+
+  void _showAiTranslationSheet(
+      BuildContext context, WidgetRef ref, int surahNumber, int verseNumber) {
+    final verseId = VerseIdentifier(surahNumber, verseNumber);
+    // Trigger fetch *before* showing the sheet
+    // Use ref.read for notifier access outside build/listen
+    // Ensure fetch is only called once per sheet opening if needed (handled in notifier)
+    Future.microtask(() =>
+        ref.read(aiTranslationProvider(verseId).notifier).fetchTranslation());
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows sheet to take more height
+      backgroundColor: Theme.of(context)
+          .colorScheme
+          .surface
+          .withOpacity(0.95), // Themed background
+      shape: const RoundedRectangleBorder(
+        // Rounded corners
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        // Use DraggableScrollableSheet for flexible height and scrolling
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.4, // Start at 40% height
+          minChildSize: 0.2, // Min height
+          maxChildSize: 0.7, // Max height
+          builder: (context, scrollController) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Optional: Add a drag handle indicator
+                  Center(
+                    child: Container(
+                      height: 5,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade600,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Title
+                  Text(
+                    'AI Translation (Quran $surahNumber:$verseNumber)',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Content area that scrolls
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: scrollController, // Link controller
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          final translationState =
+                              ref.watch(aiTranslationProvider(verseId));
+                          return translationState.when(
+                            data: (translation) {
+                              // Handle the initial empty state vs actual data
+                              if (translation.isEmpty &&
+                                  !translationState.isLoading) {
+                                // This state occurs before fetchTranslation completes
+                                // or if fetch hasn't been called yet. Show loading.
+                                return const Center(
+                                    child: Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: CircularProgressIndicator(),
+                                ));
+                              }
+                              return Text(
+                                translation,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.9),
+                                      height: 1.5, // Improve line spacing
+                                    ),
+                              );
+                            },
+                            loading: () => const Center(
+                                child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(),
+                            )),
+                            error: (error, stack) => Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Text(
+                                  'Error fetching AI translation:\n$error',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color:
+                                          Theme.of(context).colorScheme.error),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10), // Padding at bottom
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

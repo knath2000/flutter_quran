@@ -98,7 +98,19 @@ class SettingsScreen extends ConsumerWidget {
             activeColor:
                 Theme.of(context).colorScheme.primary, // Use theme accent
           ),
-
+          SwitchListTile(
+            secondary: const Icon(Icons.auto_awesome), // Icon for AI/Magic
+            title: const Text('Enable AI Translation (Swipe Verse)'),
+            subtitle: const Text(
+                'Swipe right-to-left on a verse for an AI-generated modern translation.'),
+            isThreeLine: true,
+            value: ref.watch(aiTranslationEnabledProvider), // Read state
+            onChanged: (bool value) {
+              // Update state
+              ref.read(aiTranslationEnabledProvider.notifier).state = value;
+            },
+            activeColor: Theme.of(context).colorScheme.primary,
+          ),
           const Divider(),
           // Reciter Selection
           Padding(

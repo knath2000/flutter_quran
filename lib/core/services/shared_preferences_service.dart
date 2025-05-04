@@ -10,6 +10,8 @@ class PrefKeys {
   static const String autoplayEnabled = 'autoplayEnabled';
   static const String continueLastReadEnabled =
       'continueLastReadEnabled'; // New key
+  static const String aiTranslationEnabled =
+      'aiTranslationEnabled'; // Key for AI translation
 }
 
 // Provider for SharedPreferences instance.
@@ -65,6 +67,11 @@ class SharedPreferencesService {
         false; // Default to false
   }
 
+  bool getAiTranslationEnabled() {
+    return _prefs?.getBool(PrefKeys.aiTranslationEnabled) ??
+        false; // Default to false
+  }
+
   // --- Setters ---
 
   Future<bool> setShowTranslation(bool value) async {
@@ -95,5 +102,9 @@ class SharedPreferencesService {
   Future<bool> saveContinueLastRead(bool value) async {
     return await _prefs?.setBool(PrefKeys.continueLastReadEnabled, value) ??
         false;
+  }
+
+  Future<bool> setAiTranslationEnabled(bool value) async {
+    return await _prefs?.setBool(PrefKeys.aiTranslationEnabled, value) ?? false;
   }
 }

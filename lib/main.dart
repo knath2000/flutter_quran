@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import dotenv
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +15,7 @@ import 'package:quran_flutter/core/observers/app_lifecycle_observer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env"); // Load .env file
   await Hive.initFlutter();
   // Register adapters
   Hive.registerAdapter(UserProgressAdapter());

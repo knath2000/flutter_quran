@@ -17,6 +17,13 @@
     *   Added `ref.listen` on `audioPlaybackStateProvider` to detect verse changes.
     *   Implemented logic to automatically scroll the list using `ItemScrollController.scrollTo` to keep the currently playing verse in view (aligned near top).
     *   Corrected property access for verse number in `PlayingVerseIdentifier`.
+*   **AI Translation (Phase 4 - Implemented):**
+    *   Added `flutter_dotenv` for API key management.
+    *   Created `AiTranslationService` using `google_generative_ai` package to call Gemini API (`gemini-2.5-flash-preview-04-17` model) with a specific prompt.
+    *   Added `aiTranslationEnabledProvider` setting and UI toggle in `SettingsScreen`.
+    *   Created `aiTranslationProvider` (AsyncNotifierProvider.family) for state management.
+    *   Implemented right-to-left swipe gesture on `VerseTile` using `GestureDetector`.
+    *   Swipe triggers a modal bottom sheet (`showModalBottomSheet`) displaying the AI translation (or loading/error state).
 *   **Known Issue (Autoplay Skipping):** Multiple attempts to fix autoplay skipping verses (esp. on macOS/Web) using manual logic, delays, and state flags were unsuccessful. The root cause appears to be rapid/spurious `completed` state events from `just_audio` after `playVerse` is called for the next track. **Decision:** Defer fixing this issue for now to proceed with Vercel deployment. Current implementation uses manual logic triggered by `AppLifecycleObserver`.
 *   **Local Arabic Text (Web/macOS - Phase 4 - Implemented):**
     *   Added `csv` dev dependency & pre-processing script (`tool/process_quran_csv.dart`).
@@ -58,4 +65,5 @@
 *   **Gamification Rules:** Still need definition.
 *   **Persistence:** Still using Hive/SharedPreferences split.
 *   **Surah Selection UI:** Still basic list view.
-*   **Surah Introduction Source:** Exclusively uses Google Gemini API via `GeminiSurahService` called from `surah_details_provider`, with results cached in the `surahIntroductionCache` Hive box. The previous local JSON asset implementation has been removed.
+*   **Surah Introduction Source:** Exclusively uses Google Gemini API (`gemini-1.5-flash` model via `GeminiSurahService`) called from `surah_details_provider`, with results cached in the `surahIntroductionCache` Hive box. The previous local JSON asset implementation has been removed.
+*   **AI Translation Source:** Uses Google Gemini API (`gemini-2.5-flash-preview-04-17` model via `AiTranslationService`). Requires `.env` file with `GEMINI_API_KEY`.

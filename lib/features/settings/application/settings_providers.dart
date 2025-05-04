@@ -81,3 +81,15 @@ final continueLastReadProvider = StateProvider<bool>((ref) {
 
   return initialValue;
 });
+
+// Provider for enabling/disabling AI Translation
+final aiTranslationEnabledProvider = StateProvider<bool>((ref) {
+  final prefsService = ref.watch(sharedPreferencesServiceProvider);
+  final initialValue = prefsService.getAiTranslationEnabled(); // Use new getter
+
+  ref.listenSelf((_, bool next) {
+    prefsService.setAiTranslationEnabled(next); // Use new setter
+  });
+
+  return initialValue;
+});

@@ -54,6 +54,7 @@ dependencies:
   flutter_hooks: ^0.20.5 # For state management in functional widgets
   scrollable_positioned_list: ^0.3.8
   shimmer: ^3.0.0
+  flutter_dotenv: ^5.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -84,6 +85,7 @@ flutter:
   assets:
     - assets/rive/ # Declare the Rive assets directory
     - assets/data/ # Declare the data assets directory
+    - .env # Declare the .env file
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
