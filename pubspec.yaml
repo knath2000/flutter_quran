@@ -85,7 +85,7 @@ flutter:
   assets:
     - assets/rive/ # Declare the Rive assets directory
     - assets/data/ # Declare the data assets directory
-    - .env # Declare the .env file
+  # - .env # Removed - Load API key from Vercel env vars instead
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

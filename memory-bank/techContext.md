@@ -32,8 +32,8 @@
 *   **Performance:** Must maintain smooth performance despite heavy animation usage, especially on Web and potentially lower-spec iOS devices. Requires careful optimization and testing.
 *   **Platform Differences:** Need to account for UI/UX differences and potential API variations between macOS, Web, and iOS.
 *   **API Dependencies:** Reliant on external public APIs (`alquran.cloud`, Google Gemini) for core content. Need robust error handling, caching, and potential fallbacks. API rate limits or changes could impact the app.
-*   **Gemini API Key:** Requires a `GEMINI_API_KEY` environment variable (loaded via `flutter_dotenv` from `.env` file) to be set for the Google Gemini API calls to function. This key needs secure management, especially for builds/deployments. `.env` file must be added to `.gitignore`.
-*   **Asset Management:** Requires management of potentially large audio files and animation assets (Rive/Lottie files). Consider asset bundling strategies or on-demand downloading/caching. (Local JSON for introductions removed). `.env` file needs to be declared in `pubspec.yaml` assets.
+*   **Gemini API Key:** Requires a `GEMINI_API_KEY` environment variable. For local development, this is loaded via `flutter_dotenv` from the `.env` file (which must be in `.gitignore`). For deployments (e.g., Vercel), this variable must be set directly in the deployment platform's environment variable settings.
+*   **Asset Management:** Requires management of potentially large audio files and animation assets (Rive/Lottie files). Consider asset bundling strategies or on-demand downloading/caching. (Local JSON for introductions removed). The `.env` file should *not* be declared as an asset in `pubspec.yaml` to avoid build failures in environments where the file doesn't exist (like Vercel).
 *   **Child Safety:** Ensure no external links or inappropriate content can be accessed inadvertently. API responses (especially generative ones from Gemini) need careful handling and review.
 
 ## 5. Data Sources (Active)
