@@ -1,0 +1,26 @@
+# Project Intelligence: Quran Adventures
+
+This file captures key learnings, patterns, preferences, and project intelligence discovered during development.
+
+## UI/UX Patterns
+
+*   **Bookmark Indication:**
+    *   Initial attempts using shimmer border effects (via `shimmer` package and `CustomPainter` with `SweepGradient`) proved difficult to implement correctly and visually satisfactory (e.g., clipping issues).
+    *   **Preferred Approach:** Use conditional styling directly within the `VerseTile` widget. Apply a brighter background color (`Color.lerp` with white), brighter text colors, `TextStyle.shadows` for text glow, and wrap the `Card` in a `DecoratedBox` with `BoxShadow` for container glow when `isBookmarked` is true. This provides a clear luminosity effect and is more straightforward to implement and maintain.
+*   **User Feedback:** For actions like bookmarking, provide immediate feedback using both a `SnackBar` for visual confirmation and `HapticFeedback` for tactile confirmation.
+
+## Technical Patterns & Libraries
+
+*   **Auto-Scrolling Lists:**
+    *   For scrolling to specific items in a list (like the currently playing verse), the `scrollable_positioned_list` package is highly effective and recommended over manual `ScrollController` offset calculations or `Scrollable.ensureVisible` with `GlobalKey`s.
+    *   **Implementation:**
+        *   Use `ScrollablePositionedList.builder`.
+        *   Initialize and provide `ItemScrollController` and `ItemPositionsListener`.
+        *   Listen (`ref.listen`) to the state provider that indicates the target item (e.g., `audioPlaybackStateProvider`).
+        *   When the state changes, calculate the correct target `index` for the list (remembering to account for any non-item widgets like headers/intro cards).
+        *   Call `itemScrollController.scrollTo()` with the target `index`, desired `duration`, `curve`, and `alignment`.
+    *   **State Property:** Ensure the correct property is accessed from the state object to get the item identifier (e.g., `playingVerseId.verseNumber` was correct, not `verseNumberInSurah`).
+
+## Tool Usage Notes
+
+*   **`apply_diff` Reliability:** Be cautious with `apply_diff`. If it fails or gives conflicting success/failure messages, always use `read_file` immediately before retrying the diff to ensure the search pattern matches the current file content exactly. Silent failures can occur.

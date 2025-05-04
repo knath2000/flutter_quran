@@ -66,3 +66,18 @@ final autoplayEnabledProvider = StateProvider<bool>((ref) {
 
   return initialValue;
 });
+
+// Provider for enabling/disabling "Continue Where You Left Off"
+final continueLastReadProvider = StateProvider<bool>((ref) {
+  final prefsService = ref.watch(sharedPreferencesServiceProvider);
+  // Load initial value (method to be added to service)
+  final initialValue = prefsService.loadContinueLastRead();
+
+  // Listen for changes and save
+  ref.listenSelf((_, bool next) {
+    // Save value (method to be added to service)
+    prefsService.saveContinueLastRead(next);
+  });
+
+  return initialValue;
+});

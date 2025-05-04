@@ -18,13 +18,22 @@ class UserProgress {
   @HiveField(3)
   final DateTime? lastSessionDate;
 
+  @HiveField(5) // New field for bookmarks
+  final List<Map<String, int>> bookmarks; // e.g., [{'surah': 1, 'verse': 5}]
+
+  @HiveField(6) // New field for last read verse per surah
+  final Map<int, int>
+      lastReadVerse; // e.g., {1: 5, 2: 25} (surahNumber: verseIndex)
+
   UserProgress({
     this.points = 0,
     // this.completedSurahNumbers = const {},
     this.earnedBadgeIds = const {},
-    this.completedVerseKeys = const {}, // Initialize in constructor
-    this.currentStreak = 0, // Initialize in constructor
-    this.lastSessionDate, // Initialize (can be null)
+    this.completedVerseKeys = const {},
+    this.currentStreak = 0,
+    this.lastSessionDate,
+    this.bookmarks = const [], // Initialize bookmarks
+    this.lastReadVerse = const {}, // Initialize lastReadVerse
   });
 
   // Method to create a copy with updated values
@@ -32,18 +41,22 @@ class UserProgress {
     int? points,
     // Set<int>? completedSurahNumbers,
     Set<String>? earnedBadgeIds,
-    Set<String>? completedVerseKeys, // Add to copyWith parameters
-    int? currentStreak, // Add to copyWith parameters
+    Set<String>? completedVerseKeys,
+    int? currentStreak,
     DateTime? lastSessionDate,
+    List<Map<String, int>>? bookmarks, // Add bookmarks to copyWith
+    Map<int, int>? lastReadVerse, // Add lastReadVerse to copyWith
   }) {
     return UserProgress(
       points: points ?? this.points,
       // completedSurahNumbers: completedSurahNumbers ?? this.completedSurahNumbers,
       earnedBadgeIds: earnedBadgeIds ?? this.earnedBadgeIds,
-      completedVerseKeys:
-          completedVerseKeys ?? this.completedVerseKeys, // Use in copyWith
-      currentStreak: currentStreak ?? this.currentStreak, // Use in copyWith
+      completedVerseKeys: completedVerseKeys ?? this.completedVerseKeys,
+      currentStreak: currentStreak ?? this.currentStreak,
       lastSessionDate: lastSessionDate ?? this.lastSessionDate,
+      bookmarks: bookmarks ?? this.bookmarks, // Use bookmarks in copyWith
+      lastReadVerse:
+          lastReadVerse ?? this.lastReadVerse, // Use lastReadVerse in copyWith
     );
   }
 

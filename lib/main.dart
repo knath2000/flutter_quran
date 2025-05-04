@@ -8,9 +8,9 @@ import 'package:quran_flutter/core/services/shared_preferences_service.dart';
 import 'package:quran_flutter/core/models/user_progress.dart';
 import 'package:quran_flutter/core/models/verse.dart'; // Import Verse for adapter/box typing
 import 'package:quran_flutter/core/observers/app_lifecycle_observer.dart';
-import 'package:quran_flutter/core/providers/data_providers.dart'; // Import data providers
-import 'package:flutter/foundation.dart' show kIsWeb; // For platform check
-import 'dart:io' show Platform; // For platform check
+// Import data providers
+// For platform check
+// For platform check
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

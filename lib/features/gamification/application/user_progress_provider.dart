@@ -9,7 +9,7 @@ class UserProgressNotifier extends StateNotifier<UserProgress> {
 
   // Inject the Hive service and load initial state
   UserProgressNotifier(this._hiveService)
-    : super(_hiveService.getUserProgress());
+      : super(_hiveService.getUserProgress());
 
   // Method to add points
   void addPoints(int pointsToAdd) {
@@ -115,8 +115,7 @@ class UserProgressNotifier extends StateNotifier<UserProgress> {
 
     // Update state only if streak changed or lastSessionDate needs updating
     // Also ensure we only update lastSessionDate if it's actually a new day compared to the stored one
-    final bool isNewDay =
-        state.lastSessionDate == null ||
+    final bool isNewDay = state.lastSessionDate == null ||
         today.isAfter(
           DateTime(
             state.lastSessionDate!.year,
@@ -134,6 +133,69 @@ class UserProgressNotifier extends StateNotifier<UserProgress> {
     }
   }
 
+// --- Bookmark Methods ---
+
+  /// Adds a bookmark for the given surah and verse number.
+  void addBookmark(int surahNumber, int verseNumber) {
+    final newBookmark = {'surah': surahNumber, 'verse': verseNumber};
+    // Check if already bookmarked to avoid duplicates (optional, List allows duplicates)
+    if (state.bookmarks
+        .any((b) => b['surah'] == surahNumber && b['verse'] == verseNumber)) {
+      print('Verse $surahNumber:$verseNumber already bookmarked.');
+      return; // Already bookmarked
+    }
+
+    final updatedBookmarks = List<Map<String, int>>.from(state.bookmarks)
+      ..add(newBookmark);
+    state = state.copyWith(bookmarks: updatedBookmarks);
+    print('Bookmark added: $surahNumber:$verseNumber');
+    _saveState();
+  }
+
+  /// Removes a bookmark for the given surah and verse number.
+  void removeBookmark(int surahNumber, int verseNumber) {
+    final updatedBookmarks = List<Map<String, int>>.from(state.bookmarks)
+      ..removeWhere(
+          (b) => b['surah'] == surahNumber && b['verse'] == verseNumber);
+
+    // Check if anything was actually removed before updating state
+    if (updatedBookmarks.length < state.bookmarks.length) {
+      state = state.copyWith(bookmarks: updatedBookmarks);
+      print('Bookmark removed: $surahNumber:$verseNumber');
+      _saveState();
+    } else {
+      print('Bookmark not found: $surahNumber:$verseNumber');
+    }
+  }
+
+  /// Checks if a specific verse is bookmarked.
+  bool isBookmarked(int surahNumber, int verseNumber) {
+    return state.bookmarks
+        .any((b) => b['surah'] == surahNumber && b['verse'] == verseNumber);
+  }
+
+  // --- Last Read Verse Methods ---
+
+  /// Updates the last read verse index for a given surah.
+  void updateLastReadVerse(int surahNumber, int verseIndex) {
+    // Avoid unnecessary updates if the index hasn't changed
+    if (state.lastReadVerse[surahNumber] == verseIndex) {
+      return;
+    }
+    // Create a mutable copy of the map
+    final updatedLastRead = Map<int, int>.from(state.lastReadVerse);
+    updatedLastRead[surahNumber] = verseIndex; // Update or add the entry
+    state = state.copyWith(lastReadVerse: updatedLastRead);
+    // Consider debouncing this save if called frequently during scroll
+    _saveState();
+    print('Last read verse updated for Surah $surahNumber: Index $verseIndex');
+  }
+
+  /// Gets the last read verse index for a given surah. Returns null if none recorded.
+  int? getLastReadVerseIndex(int surahNumber) {
+    return state.lastReadVerse[surahNumber];
+  }
+
   // Helper method to save the current state to Hive
   Future<void> _saveState() async {
     await _hiveService.saveUserProgress(state);
@@ -143,14 +205,14 @@ class UserProgressNotifier extends StateNotifier<UserProgress> {
 // StateNotifierProvider for UserProgress
 final userProgressProvider =
     StateNotifierProvider<UserProgressNotifier, UserProgress>((ref) {
-      // Get the Hive service instance
-      final hiveService = ref.watch(userProgressHiveServiceProvider);
-      // Pass the service to the notifier
-      final notifier = UserProgressNotifier(hiveService);
-      // Update streak when the provider is first created
-      notifier.updateStreakOnSessionStart();
-      return notifier;
-    });
+  // Get the Hive service instance
+  final hiveService = ref.watch(userProgressHiveServiceProvider);
+  // Pass the service to the notifier
+  final notifier = UserProgressNotifier(hiveService);
+  // Update streak when the provider is first created
+  notifier.updateStreakOnSessionStart();
+  return notifier;
+});
 
 // Simple provider to easily access just the points
 final userPointsProvider = Provider<int>((ref) {

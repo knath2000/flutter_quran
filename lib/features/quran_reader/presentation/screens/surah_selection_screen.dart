@@ -23,7 +23,7 @@ class SurahSelectionScreen extends ConsumerWidget {
         actions: [
           // Points Display
           Padding(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
               right: 8.0,
             ), // Cannot be const due to Theme access below
             child: Center(
@@ -35,11 +35,12 @@ class SurahSelectionScreen extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.primary,
                     size: 20,
                   ),
-                  SizedBox(width: 4), // Cannot be const due to ref.watch above
+                  const SizedBox(
+                      width: 4), // Cannot be const due to ref.watch above
                   // Watch the simple points provider
                   Text(
                     ref.watch(userPointsProvider).toString(),
-                    style: TextStyle(
+                    style: const TextStyle(
                       // Cannot be const due to ref.watch
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -51,22 +52,22 @@ class SurahSelectionScreen extends ConsumerWidget {
           ),
           // Streak Display
           Padding(
-            padding: EdgeInsets.only(right: 8.0), // Cannot be const
+            padding: const EdgeInsets.only(right: 8.0), // Cannot be const
             child: Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.local_fire_department,
                     color: Colors.orangeAccent,
                     size: 20,
                   ), // Fire icon for streak
-                  SizedBox(width: 4), // Cannot be const
+                  const SizedBox(width: 4), // Cannot be const
                   Text(
                     ref
                         .watch(currentStreakProvider)
                         .toString(), // Watch streak provider
-                    style: TextStyle(
+                    style: const TextStyle(
                       // Cannot be const
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -78,7 +79,7 @@ class SurahSelectionScreen extends ConsumerWidget {
           ),
           // Settings Button
           IconButton(
-            icon: Icon(Icons.settings_outlined), // Cannot be const
+            icon: const Icon(Icons.settings_outlined), // Cannot be const
             tooltip: 'Settings',
             onPressed: () {
               context.push(AppRoutes.settings); // Use push to keep stack
@@ -86,7 +87,7 @@ class SurahSelectionScreen extends ConsumerWidget {
           ),
           // Badges Button
           IconButton(
-            icon: Icon(Icons.emoji_events_outlined), // Cannot be const
+            icon: const Icon(Icons.emoji_events_outlined), // Cannot be const
             tooltip: 'My Badges',
             onPressed: () {
               // Navigate to the badges screen
@@ -101,8 +102,8 @@ class SurahSelectionScreen extends ConsumerWidget {
           // Layer 1: Starry Background
           StarryBackground(
             starColor: Theme.of(context).colorScheme.primary.withOpacity(
-              0.7,
-            ), // Gold stars, slightly transparent
+                  0.7,
+                ), // Gold stars, slightly transparent
             numberOfStars: 100, // Adjust count as needed
           ),
           // Layer 2: Rive Animation (e.g., subtle background movement)
@@ -121,8 +122,8 @@ class SurahSelectionScreen extends ConsumerWidget {
               gradient: LinearGradient(
                 colors: [
                   Theme.of(context).primaryColor.withOpacity(
-                    0.6,
-                  ), // Semi-transparent gradient overlay
+                        0.6,
+                      ), // Semi-transparent gradient overlay
                   Theme.of(context).colorScheme.surface.withOpacity(0.85),
                 ],
                 begin: Alignment.topCenter,
@@ -134,9 +135,9 @@ class SurahSelectionScreen extends ConsumerWidget {
           surahListAsync.when(
             data: (surahs) {
               if (surahs.isEmpty) {
-                return Center(
+                return const Center(
                   // Can be const
-                  child: const Text(
+                  child: Text(
                     'No Surahs found. Check API connection or response.',
                     style: TextStyle(
                       // Can be const
@@ -161,24 +162,22 @@ class SurahSelectionScreen extends ConsumerWidget {
                     },
                     child: Padding(
                       // Can be const
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         // Can be const
                         vertical: 12.0,
                         horizontal: 16.0,
                       ),
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .center, // Center children horizontally
+                        crossAxisAlignment: CrossAxisAlignment
+                            .center, // Center children horizontally
                         children: [
                           Text(
                             '${surah.number}. ${surah.englishName}',
-                            style:
-                                Theme.of(
-                                  context,
-                                ).textTheme.titleLarge, // Larger title style
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleLarge, // Larger title style
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 4,
                           ), // Cannot be const due to Theme access below
                           Text(
@@ -186,9 +185,12 @@ class SurahSelectionScreen extends ConsumerWidget {
                             style: Theme.of(
                               context,
                             ).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface
-                                  .withOpacity(0.7), // Slightly dimmer color
-                            ),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(
+                                          0.7), // Slightly dimmer color
+                                ),
                           ),
                         ],
                       ),
@@ -197,19 +199,18 @@ class SurahSelectionScreen extends ConsumerWidget {
                 },
               );
             },
-            loading:
-                () => Center(
-                  child: const CircularProgressIndicator(),
-                ), // Can add const
+            loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ), // Can add const
             error: (error, stackTrace) {
               print('Error loading Surah list UI: $error\n$stackTrace');
               return Center(
                 child: Padding(
                   // Can be const
-                  padding: EdgeInsets.all(16.0), // Can be const
+                  padding: const EdgeInsets.all(16.0), // Can be const
                   child: Text(
                     'Failed to load Surahs. Please check your connection.\nError: $error',
-                    style: TextStyle(
+                    style: const TextStyle(
                       // Cannot be const due to error variable
                       color: Colors.white,
                     ),

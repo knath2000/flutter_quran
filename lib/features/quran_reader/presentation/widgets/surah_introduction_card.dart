@@ -9,10 +9,10 @@ class SurahIntroductionCard extends HookWidget {
       "This is a placeholder introduction for the Surah. It provides a brief overview of the themes and context. More details can be revealed by clicking the button below. This text will be replaced with actual data from an API or local source in a future implementation. We are currently focusing on the UI structure.";
 
   const SurahIntroductionCard({
-    Key? key,
+    super.key,
     required this.introductionAsync,
     required this.surahName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +31,9 @@ class SurahIntroductionCard extends HookWidget {
         // Determine expansion based on line count (e.g., more than 3 lines)
         final lines = effectiveIntroduction.split('\n');
         final bool canExpand = lines.length > 3;
-        final String displayedText =
-            (isExpanded.value || !canExpand)
-                ? effectiveIntroduction
-                : '${lines.take(3).join('\n')}...'; // Show first 3 lines when collapsed
+        final String displayedText = (isExpanded.value || !canExpand)
+            ? effectiveIntroduction
+            : '${lines.take(3).join('\n')}...'; // Show first 3 lines when collapsed
 
         // Revert back to Card, remove background image properties
         return Card(
@@ -157,29 +156,27 @@ class SurahIntroductionCard extends HookWidget {
           ),
         ); // End Card
       }, // End data builder
-      loading:
-          () => const Padding(
-            // Show loading indicator within card-like structure
-            padding: EdgeInsets.symmetric(vertical: 40.0),
-            child: Center(child: CircularProgressIndicator()),
+      loading: () => const Padding(
+        // Show loading indicator within card-like structure
+        padding: EdgeInsets.symmetric(vertical: 40.0),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, stackTrace) => Card(
+        // Show error message within card
+        margin: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 10.0,
+        ),
+        color: colorScheme.errorContainer,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Error loading introduction for $surahName.',
+            style: TextStyle(color: colorScheme.onErrorContainer),
+            textAlign: TextAlign.center,
           ),
-      error:
-          (error, stackTrace) => Card(
-            // Show error message within card
-            margin: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 10.0,
-            ),
-            color: colorScheme.errorContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Error loading introduction for $surahName.',
-                style: TextStyle(color: colorScheme.onErrorContainer),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
+        ),
+      ),
     ); // End introductionAsync.when
   }
 }

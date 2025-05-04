@@ -87,6 +87,17 @@ class SettingsScreen extends ConsumerWidget {
             activeColor:
                 Theme.of(context).colorScheme.primary, // Use theme accent
           ),
+          SwitchListTile(
+            secondary: const Icon(Icons.history), // Icon for resuming
+            title: const Text('Continue where you left off'),
+            value: ref.watch(continueLastReadProvider), // Read state
+            onChanged: (bool value) {
+              // Update state
+              ref.read(continueLastReadProvider.notifier).state = value;
+            },
+            activeColor:
+                Theme.of(context).colorScheme.primary, // Use theme accent
+          ),
 
           const Divider(),
           // Reciter Selection

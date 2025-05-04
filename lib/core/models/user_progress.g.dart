@@ -19,18 +19,22 @@ class UserProgressAdapter extends TypeAdapter<UserProgress> {
     return UserProgress(
       points: fields[0] as int,
       earnedBadgeIds:
-          (fields[1] as List).cast<String>().toSet(), // Convert back to Set
+          (fields[1] as List).cast<String>().toSet(), // Add .toSet()
       completedVerseKeys:
-          (fields[4] as List).cast<String>().toSet(), // Convert back to Set
+          (fields[4] as List).cast<String>().toSet(), // Add .toSet()
       currentStreak: fields[2] as int,
       lastSessionDate: fields[3] as DateTime?,
+      bookmarks: (fields[5] as List)
+          .map((dynamic e) => (e as Map).cast<String, int>())
+          .toList(),
+      lastReadVerse: (fields[6] as Map).cast<int, int>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProgress obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.points)
       ..writeByte(4)
@@ -40,7 +44,11 @@ class UserProgressAdapter extends TypeAdapter<UserProgress> {
       ..writeByte(2)
       ..write(obj.currentStreak)
       ..writeByte(3)
-      ..write(obj.lastSessionDate);
+      ..write(obj.lastSessionDate)
+      ..writeByte(5)
+      ..write(obj.bookmarks)
+      ..writeByte(6)
+      ..write(obj.lastReadVerse);
   }
 
   @override

@@ -80,9 +80,8 @@ Future<void> main() async {
       verses.forEach((verseNumStr, words) {
         // Sort words by word number and join
         final sortedWordKeys = words.keys.toList()..sort();
-        final fullVerseText = sortedWordKeys
-            .map((key) => words[key]!)
-            .join(' ');
+        final fullVerseText =
+            sortedWordKeys.map((key) => words[key]!).join(' ');
         quranTextMap[surahNumStr]![verseNumStr] = fullVerseText;
       });
     });
@@ -96,7 +95,7 @@ Future<void> main() async {
 
     // Write JSON output
     final outputFile = File(outputJsonPath);
-    final jsonEncoder = JsonEncoder.withIndent('  '); // Pretty print
+    const jsonEncoder = JsonEncoder.withIndent('  '); // Pretty print
     await outputFile.writeAsString(jsonEncoder.convert(quranTextMap));
 
     print('Successfully processed CSV and wrote JSON to $outputJsonPath');

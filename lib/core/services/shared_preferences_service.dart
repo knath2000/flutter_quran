@@ -8,6 +8,8 @@ class PrefKeys {
   static const String fontSizeScaleFactor = 'fontSizeScaleFactor';
   static const String selectedReciter = 'selectedReciter';
   static const String autoplayEnabled = 'autoplayEnabled';
+  static const String continueLastReadEnabled =
+      'continueLastReadEnabled'; // New key
 }
 
 // Provider for SharedPreferences instance.
@@ -57,6 +59,12 @@ class SharedPreferencesService {
         'ar.alafasy'; // Example default
   }
 
+  // New getter for continueLastRead
+  bool loadContinueLastRead() {
+    return _prefs?.getBool(PrefKeys.continueLastReadEnabled) ??
+        false; // Default to false
+  }
+
   // --- Setters ---
 
   Future<bool> setShowTranslation(bool value) async {
@@ -81,5 +89,11 @@ class SharedPreferencesService {
 
   Future<bool> setAutoplayEnabled(bool value) async {
     return await _prefs?.setBool(PrefKeys.autoplayEnabled, value) ?? false;
+  }
+
+  // New setter for continueLastRead
+  Future<bool> saveContinueLastRead(bool value) async {
+    return await _prefs?.setBool(PrefKeys.continueLastReadEnabled, value) ??
+        false;
   }
 }

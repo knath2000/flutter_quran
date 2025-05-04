@@ -2,12 +2,21 @@
 
 ## 1. Current Work Focus
 
-*   **Immediate:** Prepare web app for Vercel deployment.
 *   Continuing with Phase 5 (Gamification Layer) and Phase 4 (Advanced Animations & Engagement).
-*   Next steps involve implementing remaining gamification logic (other badges), refining UI/animations (journey map, Rive), and adding tests.
+*   Focus on implementing remaining gamification logic (other badges), refining UI/animations (journey map, Rive), and adding tests.
 
 ## 2. Recent Changes
 
+*   **Bookmark UI/UX (Phase 4 - Implemented):**
+    *   Removed bookmark icon from `VerseTile`.
+    *   Implemented long-press gesture on `VerseTile` to toggle bookmark status.
+    *   Added SnackBar and haptic feedback for bookmark actions.
+    *   Implemented brightness/luminosity effect (brighter background, text glow) for bookmarked `VerseTile` using conditional styling and `DecoratedBox` with `BoxShadow`. (Removed previous shimmer border attempts).
+*   **Auto-Scroll on Playback (Phase 4 - Implemented):**
+    *   Integrated `scrollable_positioned_list` into `QuranReaderScreen`.
+    *   Added `ref.listen` on `audioPlaybackStateProvider` to detect verse changes.
+    *   Implemented logic to automatically scroll the list using `ItemScrollController.scrollTo` to keep the currently playing verse in view (aligned near top).
+    *   Corrected property access for verse number in `PlayingVerseIdentifier`.
 *   **Known Issue (Autoplay Skipping):** Multiple attempts to fix autoplay skipping verses (esp. on macOS/Web) using manual logic, delays, and state flags were unsuccessful. The root cause appears to be rapid/spurious `completed` state events from `just_audio` after `playVerse` is called for the next track. **Decision:** Defer fixing this issue for now to proceed with Vercel deployment. Current implementation uses manual logic triggered by `AppLifecycleObserver`.
 *   **Local Arabic Text (Web/macOS - Phase 4 - Implemented):**
     *   Added `csv` dev dependency & pre-processing script (`tool/process_quran_csv.dart`).
@@ -29,14 +38,8 @@
 *   Completed Phases 1-3.
 *   Initialized Memory Bank.
 *   **Refactor (Surah Introductions):** Removed the unused `SurahIntroductionService`, `surahIntroductionProvider`, and `assets/data/surah_introductions.json`. Consolidated introduction fetching logic within `surah_details_provider` to use `GeminiSurahService` exclusively, with caching via `surahIntroductionCache` Hive box. Fixed resulting import error in `quran_reader_screen.dart`.
-*   **Build Verification:** Successfully ran `flutter build web` after the refactor and fix.
-
 ## 3. Next Steps
 
-*   **Vercel Deployment Prep (Current):**
-    *   Confirm Git integration.
-    *   Add notes on Vercel account/CLI setup.
-    *   Finalize deployment plan documentation.
 *   **Gamification (Phase 5):** Implement logic for awarding other badges (e.g., streak milestones), refine BadgesScreen UI, implement visual progress map/journey concept for Surah selection.
 *   **Advanced Animations (Phase 4):** Obtain/Create & Integrate actual Rive/Lottie animations (including `background_effect.riv`), uncomment Rive widget in `SurahSelectionScreen`.
 *   **Refinement (Ongoing):** Implement dynamic reciter list source in Settings, refine error handling/loading states, add tests (especially for audio logic), **revisit autoplay skipping issue**.

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart'; // Ensure Material widgets are imported
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:quran_flutter/core/models/surah_info.dart';
 import 'package:quran_flutter/features/quran_reader/application/providers/surah_list_provider.dart';
 // import 'package:quran_flutter/features/quran_reader/presentation/widgets/surah_grid_tile.dart'; // Not used in placeholder
 import 'package:go_router/go_router.dart'; // For navigation
@@ -68,18 +67,17 @@ class SurahJourneyMap extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error:
-          (error, stackTrace) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Error loading Surah data for map: $error',
-                style: const TextStyle(
-                  color: Colors.white,
-                ), // Ensure text visibility
-              ),
-            ),
+      error: (error, stackTrace) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Error loading Surah data for map: $error',
+            style: const TextStyle(
+              color: Colors.white,
+            ), // Ensure text visibility
           ),
+        ),
+      ),
     );
   }
 }

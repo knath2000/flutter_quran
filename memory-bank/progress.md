@@ -20,6 +20,8 @@
     *   Streak update logic implemented and called on provider init.
     *   Logic added to mark verses as completed and trigger badge checks.
     *   Surah introductions are fetched via Google Gemini API (using `GeminiSurahService` called from `surah_details_provider`) and cached in Hive (`surahIntroductionCache`).
+    *   Bookmark feature implemented with long-press gesture, feedback, and brightness/luminosity visual indicator on `VerseTile`.
+    *   Auto-scrolling implemented in `QuranReaderScreen` to keep the currently playing verse visible during playback.
 
 ## 2. What's Left to Build
 
@@ -47,7 +49,7 @@
 *   API endpoints and editions in code are examples and need confirmation.
 *   Error handling in UI is basic.
 *   Settings screen logic for reciter list source needs implementation (currently hardcoded).
-*   Audio playback is basic (no progress, state handling, or sync yet).
+*   Audio playback state handling improved (used for auto-scroll), but word-by-word sync still deferred.
 *   No tests written yet.
 *   `StarryBackground` animation performance on lower-end devices untested.
 *   Streak update logic in `UserProgressNotifier` is only called on provider init, not necessarily on app resume yet (requires listening to AppLifecycleState).
