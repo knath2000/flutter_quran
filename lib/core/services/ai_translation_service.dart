@@ -26,7 +26,8 @@ class AiTranslationService {
 
     try {
       OpenAI.apiKey = apiKey;
-      OpenAI.baseUrl = 'https://openrouter.ai/api/v1';
+      OpenAI.baseUrl =
+          'https://openrouter.ai/api'; // Remove /v1, package likely adds it
       // Optionally add other configurations like organization ID if needed
       // OpenAI.organization = "YOUR ORGANIZATION ID";
       _isOpenAiInitialized = true;
