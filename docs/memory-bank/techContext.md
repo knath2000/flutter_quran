@@ -22,9 +22,13 @@
     - English Translation: `en.sahih`
     - Audio Recitation: `ar.alafasy` (configurable via settings)
     - English Transliteration: `en.transliteration` (configurable via settings)
-- **Google Gemini API**: Used for dynamically generating Surah introductions.
-  - Model: `gemini-2.0-flash`
+- **Google Gemini API**: Used for dynamically generating *Surah introductions*.
+  - Model: `gemini-2.0-flash` (or potentially updated model if changed elsewhere)
   - Authentication: Requires `GEMINI_API_KEY` passed via `--dart-define` during build.
+- **OpenRouter.ai API**: Used for dynamically generating *AI verse translations*.
+  - Endpoint: `https://openrouter.ai/api/v1` (via `dart_openai` package)
+  - Model: `google/gemini-2.5-flash-preview`
+  - Authentication: Requires `OPENROUTER_API_KEY` passed via `--dart-define` during build.
 
 ### Web Technologies
 - **PWA**: Progressive Web App capabilities
@@ -46,7 +50,8 @@
 - Firebase project configuration in `firebase_options.dart`
 - Environment-specific configurations
 - Web-specific configurations in `web/index.html` and `web/manifest.json`
-- API Key for Gemini passed via `--dart-define=GEMINI_API_KEY=$GEMINI_API_KEY` in `build.sh` for Vercel builds.
+- API Key for Gemini (Introductions) passed via `--dart-define=GEMINI_API_KEY=$GEMINI_API_KEY` in `build.sh` for Vercel builds.
+- API Key for OpenRouter (Translations) passed via `--dart-define=OPENROUTER_API_KEY=$OPENROUTER_API_KEY` in `build.sh` for Vercel builds.
 - Web renderer set to HTML (`--web-renderer html`) in `build.sh` for smaller initial load.
 - Source maps enabled (`--source-maps`) in `build.sh` for release builds.
 
@@ -97,7 +102,8 @@
 - `cloud_firestore`: Database
 - `firebase_performance`: Performance monitoring
 ### AI / Generative
-- `google_generative_ai`: Google Gemini API SDK
+- `google_generative_ai`: Google Gemini API SDK (for Surah Introductions)
+- `dart_openai`: OpenAI compatible SDK (used for OpenRouter AI Translations)
 
 ### UI/UX
 - `flutter_hooks`: UI state management

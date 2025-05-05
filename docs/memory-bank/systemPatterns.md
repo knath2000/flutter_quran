@@ -49,6 +49,7 @@ Each feature follows a simplified clean architecture approach:
 - Services encapsulate business logic
 - Services are injected into repositories or providers
 - Services handle cross-cutting concerns
+- Example: `AiTranslationService` uses the `dart_openai` package (configured for OpenRouter) to fetch AI translations.
 
 ### Factory Pattern
 - Used for creating complex objects

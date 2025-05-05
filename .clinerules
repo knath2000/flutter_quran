@@ -26,8 +26,12 @@ This file captures key learnings, patterns, preferences, and project intelligenc
 *   **`apply_diff` Reliability:** Be cautious with `apply_diff`. If it fails or gives conflicting success/failure messages, always use `read_file` immediately before retrying the diff to ensure the search pattern matches the current file content exactly. Silent failures can occur.
 ## AI Integration Patterns
 
-*   **API Key Management:** Use `--dart-define=GEMINI_API_KEY=YOUR_KEY` during the build process (e.g., in `build.sh` or `launch.json`) to pass the API key securely. Access the key in code using `const apiKey = String.fromEnvironment('GEMINI_API_KEY');`. This is preferred over `flutter_dotenv` for better build/deployment integration.
-*   **Service Layer:** Encapsulate API calls within a dedicated service class (e.g., `AiTranslationService`). **Initialize the API client (`GenerativeModel`) lazily** within the service (e.g., in a private `_getModel()` method called by fetch methods) to ensure the key is available when needed. Provide a Riverpod `Provider` for the service.
+*   **API Key Management:** Use `--dart-define=YOUR_API_KEY_NAME=YOUR_KEY` during the build process (e.g., in `build.sh` or `launch.json`) to pass API keys securely. Access keys in code using `const apiKey = String.fromEnvironment('YOUR_API_KEY_NAME');`. This is preferred over `flutter_dotenv`.
+    *   Currently used keys: `GEMINI_API_KEY` (for Surah Introductions), `OPENROUTER_API_KEY` (for AI Translations).
+*   **Service Layer:** Encapsulate API calls within dedicated service classes (e.g., `AiTranslationService`, `GeminiSurahService`).
+    *   **AI Translation (`AiTranslationService`):** Uses the `dart_openai` package. Initializes the `OpenAI` singleton (setting `apiKey` and `baseUrl` for OpenRouter) lazily within a static `_initializeOpenAI` method called by fetch methods.
+    *   **Surah Introduction (`GeminiSurahService` - *verify name*):** Uses the `google_generative_ai` package. Initializes the `GenerativeModel` lazily.
+    *   Provide Riverpod `Provider`s for services.
 *   **State Management (Async Family):** For features requiring on-demand fetching based on specific parameters (like fetching a translation for a specific verse), use `AsyncNotifierProvider.family`.
     *   Define a simple class or record (with `==` and `hashCode` overrides) for the family argument (e.g., `VerseIdentifier`).
     *   Implement the `build` method to return an initial non-loading state (e.g., empty string or default value). Do *not* trigger the fetch in `build`.
